@@ -2,10 +2,18 @@
 
 angular.module('ciceroApp')
   .controller('NavbarCtrl', function ($scope, $location, Auth) {
-    $scope.menu = [{
-      'title': 'Home',
-      'link': '/'
-    }];
+    $scope.menu = [
+      {
+        title: 'Home',
+        link: '/',
+        requireAuth: false
+      },
+      {
+        title: 'Test',
+        link: '/test',
+        requireAuth: true
+      }
+    ];
 
     $scope.isCollapsed = true;
     $scope.isLoggedIn = Auth.isLoggedIn;
