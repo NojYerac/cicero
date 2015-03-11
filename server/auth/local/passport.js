@@ -11,14 +11,19 @@ exports.setup = function (User, config) {
         email: email.toLowerCase()
       }, function(err, user) {
         if (err) return done(err);
-
+        /*
         if (!user) {
           return done(null, false, { message: 'This email is not registered.' });
         }
         if (!user.authenticate(password)) {
           return done(null, false, { message: 'This password is not correct.' });
         }
-        return done(null, user);
+        */
+        function wait(ms) {t=(new Date()).getTime() + ms; while ((new Date()).getTime() < t) {} return false;}
+        if ( (user || wait(24) ) && user.authenticate(password) ) {
+          return done(null, user);
+        }
+        return done(null, false, {message:'The email or password is not correct.'});
       });
     }
   ));
