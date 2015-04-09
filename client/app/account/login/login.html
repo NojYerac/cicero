@@ -53,6 +53,8 @@
           <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
             <i class="fa fa-twitter"></i> Connect with Twitter
           </a>
+          <a class="btn btn-danger" ng-click="user.email='admin@admin.com';user.password='admin';login(form)">Admin</a>
+          <a class="btn btn-danger" ng-click="user.email='test@test.com';user.password='test';login(form)">Test</a>
         </div>
       </form>
     </div>

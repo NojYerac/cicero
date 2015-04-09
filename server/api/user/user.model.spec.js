@@ -57,4 +57,14 @@ describe('User Model', function() {
   it("should not authenticate user if password is invalid", function() {
     return user.authenticate('blah').should.not.be.true;
   });
+
+  it("should change the role to admin", function(done) {
+    user.email = 'test@test.com';
+    user.role = 'admin';
+    user.save(function(err) {
+      should.not.exist(err);
+      user.role.should.equal('admin');
+      done();
+    });
+  });
 });

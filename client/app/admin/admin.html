@@ -1,12 +1,40 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
 <div class="container">
-  <p>The delete user and user index api routes are restricted to users with the 'admin' role.</p>
+  <p>
+    The delete user and user index api routes are restricted to users with the
+    'admin' role.
+  </p>
   <ul class="list-group">
     <li class="list-group-item" ng-repeat="user in users">
-        <strong>{{user.name}}</strong><br>
-        <span class="text-muted">{{user.email}}</span>
-        <a ng-click="delete(user)" class="trash"><span class="glyphicon glyphicon-trash pull-right"></span></a>
+        <strong>{{user.name}}</strong>
+        <span class="label label-{{labelClass(user.role)}}">{{user.role}}</span>
+        <br>
+        <span class="text-muted">{{user.email}} - {{user._id}}</span>
+        <span class="pull-right">
+          <a ng-click="user.showEdit=!user.showEdit" class="edit">
+            <span class="glyphicon glyphicon-edit"></span>
+          </a>
+          <a ng-click="delete(user)" class="trash">
+            <span class="glyphicon glyphicon-trash"></span>
+          </a>
+        </span>
+        <div ng-show="user.showEdit">
+          <span class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button"
+            id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+              {{user.selectedRole || user.role}}
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+              <li role="presentation" ng-repeat="role in allowedRoles">
+                <a  ng-click="user.selectedRole=role">{{role}}</a>
+              </li>
+            </ul>
+          </span>
+          <button class="btn btn-primary"
+          ng-click="setUserRole(user)">Edit</button>
+        </div>
     </li>
   </ul>
 </div>

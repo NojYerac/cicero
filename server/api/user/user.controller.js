@@ -80,6 +80,25 @@ exports.changePassword = function(req, res, next) {
 };
 
 /**
+ * Change a users role
+ * restrictions: 'admin'
+ */
+exports.role = function(req, res, next) {
+  var userId = req.params._id;
+  User.findOne({
+    id: userId
+  }, '-salt -hashedPassword', function(err, user) {
+    if (err) return next(err);
+    if (!user) return res.json(401);
+    user.role = req.body.role;
+    user.save(function(err){
+      if(err) return validationError(res, err);
+      res.json(user);
+    });
+  });
+};
+
+/**
  * Get my info
  */
 exports.me = function(req, res, next) {
