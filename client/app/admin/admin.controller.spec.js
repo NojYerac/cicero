@@ -59,6 +59,8 @@ describe('Controller: AdminCtrl', function () {
       $httpBackend.flush();
 
       scope.delete(scope.users[0]);
+      $httpBackend.expectGET('/api/users/csrf')
+        .respond('{"token":"0987654321abcdef0987654321abcdef"}')
       $httpBackend.expectDELETE('/api/users/5510d055111eb72e78edcad5')
         .respond(204);
     }));

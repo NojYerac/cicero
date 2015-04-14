@@ -8,7 +8,8 @@ var user = new User({
   provider: 'local',
   name: 'Fake User',
   email: 'test@test.com',
-  password: 'password'
+  password: 'password',
+  csrfTokens: []
 });
 
 describe('User Model', function() {
@@ -67,4 +68,53 @@ describe('User Model', function() {
       done();
     });
   });
+
+  it("should return a CSRF token", function(done){
+      var token=user.csrf;
+      user.csrfTokens.should.have.length(1);
+      user.csrfTokens[0].token.should.equal(token);
+      done();
+  });
+
+  it ("should invalidate a bad CSRF token", function(done) {
+    user.csrfTokens.should.have.length(1);
+    var token=user.csrfTokens[0].token;
+    try {
+      user.csrf='abc';
+    } catch (err) {
+      should.exist(err);
+    }
+    user.csrfTokens.should.have.length(1);
+    done();
+  });
+
+  it ("should expire old CSRF tokens", function(done){
+    var token = user.csrf
+    user.csrfTokens.should.have.length(2);
+    //make tokens 2 hours old
+    user.csrfTokens[0].createdAt = new Date(Date.now() - (2*60*60*1000));
+    user.csrfTokens[1].createdAt = new Date(Date.now() - (2*60*60*1000));
+    try {
+      user.csrf=token;
+    } catch (err) {
+      should.exist(err);
+    }
+    user.csrfTokens.should.have.length(0);
+    done();
+
+  })
+
+  it ("should validate a good CSRF token", function(done) {
+    var token = user.csrf;
+    try {
+      user.csrf=token
+    } catch (err) {
+      should.not.exist(err);
+    } finally {
+      user.csrfTokens.should.have.length(0);
+    }
+    done();
+  });
+
+
 });

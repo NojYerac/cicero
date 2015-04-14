@@ -38,7 +38,7 @@ exports.create = function (req, res, next) {
  * Get a single user
  */
 exports.show = function (req, res, next) {
-  var userId = req.params.id;
+  var userId = req.params.id || req.user._id;
 
   User.findById(userId, function (err, user) {
     if (err) return next(err);
@@ -105,10 +105,26 @@ exports.me = function(req, res, next) {
   var userId = req.user._id;
   User.findOne({
     _id: userId
-  }, '-salt -hashedPassword', function(err, user) { // don't ever give out the password or salt
+  }, '-salt -hashedPassword -csrfTokens', function(err, user) { // don't ever give out the password or salt
     if (err) return next(err);
     if (!user) return res.json(401);
     res.json(user);
+  });
+};
+
+exports.csrf = function(req, res, next) {
+  var userId = req.user._id;
+  User.findOne({
+    _id: userId
+  }, '-salt -hashedPassword', function(err, user) {
+    if (err) return next(err);
+    if (!user) return res.json(401);
+    var  csrfToken = user.csrf;
+    user.save(function(err) {
+      if (err) return validationError(res, err);
+      res.json({"csrfToken": csrfToken});
+    });
+
   });
 };
 

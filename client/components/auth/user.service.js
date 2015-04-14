@@ -23,6 +23,12 @@ angular.module('ciceroApp')
         params: {
           controller: 'role'
         }
+      },
+      getCSRFToken: {
+        method: 'GET',
+        params: {
+          id: 'csrf'
+        }
       }
 	  });
   });

@@ -12,6 +12,7 @@ var validateJwt = expressJwt({ secret: config.secrets.session });
 /**
  * Attaches the user object to the request if authenticated
  * Otherwise returns 403
+ *
  */
 function isAuthenticated() {
   return compose()
@@ -40,7 +41,6 @@ function isAuthenticated() {
  */
 function hasRole(roleRequired) {
   if (!roleRequired) throw new Error('Required role needs to be set');
-
   return compose()
     .use(isAuthenticated())
     .use(function meetsRequirements(req, res, next) {
@@ -52,6 +52,41 @@ function hasRole(roleRequired) {
       }
     });
 }
+
+/**
+ * Validates a CSRF token
+ */
+ function validateCSRFToken(role) {
+   role = role || config.userRoles[0];
+   return compose()
+    .use(hasRole(role))
+    //.use(hasRole(role))
+    .use(function(req, res, next){
+      console.log(req.query.csrfToken);
+      var csrfToken;
+      if (req.body && req.body.csrfToken) {
+        csrfToken = req.body.csrfToken;
+      } else if (req.query && req.query.csrfToken) {
+        csrfToken = req.query.csrfToken;
+      }
+      console.log(csrfToken)
+      if (csrfToken) {
+        try {
+          console.log(req.user.csrfTokens)
+          req.user.csrf = csrfToken;
+          req.user.save(function(err) {
+            if (err) res.json(500, err);
+            next();
+          })
+        } catch (err) {
+          res.json(403, {message: 'Invalid CSRF token'});
+        }
+
+      } else {
+        res.json(403, {message: 'CSRF token missing'});
+      }
+    });
+ }
 
 /**
  * Returns a jwt token signed by the app secret
@@ -74,3 +109,4 @@ exports.isAuthenticated = isAuthenticated;
 exports.hasRole = hasRole;
 exports.signToken = signToken;
 exports.setTokenCookie = setTokenCookie;
+exports.validateCSRFToken = validateCSRFToken

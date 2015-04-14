@@ -8,14 +8,17 @@ angular.module('ciceroApp')
 
     $scope.allowedRoles = ['admin', 'user'];
 
-    $scope.delete = function(user) {
-      User.remove({ id: user._id });
-      angular.forEach($scope.users, function(u, i) {
-        if (u === user) {
-          $scope.users.splice(i, 1);
-        }
+    $scope.delete = function(user){
+      User.getCSRFToken(function(res){
+        console.log(res.csrfToken);
+        User.remove({ id: user._id, csrfToken: res.csrfToken });
+        angular.forEach($scope.users, function(u, i) {
+          if (u === user) {
+            $scope.users.splice(i, 1);
+          }
+        });
       });
-    };
+    }
 
     $scope.setUserRole = function(user) {
       //console.log(user._id);
@@ -37,4 +40,5 @@ angular.module('ciceroApp')
         user : 'primary'
       }[role]
     };
+
   });

@@ -93,6 +93,23 @@ angular.module('ciceroApp')
       },
 
       /**
+       * Get CSRF token
+       *
+       * @param  {Function} callback    - optional
+       * @return {Promise}
+       */
+      getCSRFToken: function(callback) {
+        var cb = callback || angular.noop;
+        return User.getCSRFToken({ id: currentUser._id},
+        function(csrf){
+          return cb(csrf);
+        },
+        function(err){
+          return cb(err)
+        }).$promise;
+      },
+
+      /**
        * Gets all available info on authenticated user
        *
        * @return {Object} user

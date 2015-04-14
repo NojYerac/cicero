@@ -3,6 +3,8 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var crypto = require('crypto');
+var config = require('../../config/environment');
+
 var authTypes = ['github', 'twitter', 'facebook', 'google'];
 var allowedRoles = ['admin','user'];
 var UserSchema = new Schema({
@@ -12,6 +14,7 @@ var UserSchema = new Schema({
     type: String,
     default: 'user'
   },
+  csrfTokens: Array,
   hashedPassword: String,
   provider: String,
   salt: String,
@@ -55,6 +58,47 @@ UserSchema
     };
   });
 
+// CSRF Token
+UserSchema
+  .virtual('csrf')
+  .get(function() {
+    if (this.csrfTokens) {
+      var tokens = [];
+      for (var i=0; i<this.csrfTokens.length; ++i) {
+        var createdAt=this.csrfTokens[i].createdAt
+        if ((60*60*12)<((new Date())-createdAt)) {
+          tokens.push(this.csrfTokens[i]);
+        }
+      }
+    }
+    //this.csrfTokens = this.csrfTokens || {};
+    var token={
+      token : crypto.randomBytes(20).toString('hex'),
+      createdAt : new Date()
+    }
+    this.csrfTokens.push(token);
+    return token.token
+    //return Object.keys(this.csrfTokens)[0];
+  })
+  .set(function(csrfToken) {
+    if (this.csrfTokens) {
+      var tokens = [], valid=false;
+      for (var i=0; i<this.csrfTokens.length; ++i) {
+        var createdAt=this.csrfTokens[i].createdAt
+        if ((60*60*1000)>((new Date())-createdAt)) {
+          if (csrfToken === this.csrfTokens[i].token) {
+            valid = true;
+          }
+          else {
+            tokens.push(this.csrfTokens[i]);
+          }
+        }
+      }
+      this.csrfTokens=tokens;
+    }
+    if (!valid) throw (Error('Invalid CSRF token'));
+  });
+
 /**
  * Validations
  */
@@ -93,9 +137,9 @@ UserSchema
 UserSchema
   .path('role')
   .validate(function() {
-    if (allowedRoles.indexOf(this.role) === -1) return false;
+    if (config.userRoles.indexOf(this.role) === -1) return false;
     return true;
-  }, 'Role cannot be blank');
+  }, 'Invalid role');
 
 var validatePresenceOf = function(value) {
   return value && value.length;
