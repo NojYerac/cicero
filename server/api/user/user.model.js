@@ -6,7 +6,6 @@ var crypto = require('crypto');
 var config = require('../../config/environment');
 
 var authTypes = ['github', 'twitter', 'facebook', 'google'];
-var allowedRoles = ['admin','user'];
 var UserSchema = new Schema({
   name: String,
   email: { type: String, lowercase: true },
@@ -155,7 +154,7 @@ UserSchema
     if (!validatePresenceOf(this.hashedPassword) && authTypes.indexOf(this.provider) === -1) {
       next(new Error('Invalid password'));
     }
-    else if (!validatePresenceOf(this.role) || allowedRoles.indexOf(this.role) === -1) {
+    else if (!validatePresenceOf(this.role) || config.userRoles.indexOf(this.role) === -1) {
       next(new Error('Invalid role'));
     }
     else

@@ -41,8 +41,10 @@ describe("GET /api/users", function() {
     });
   });
 
-  before(function(done) {
-    done();
+  after(function(done) {
+    User.remove().exec().then(function() {
+      done();
+    });
   });
 
   it('should respond with JSON array', function(done) {

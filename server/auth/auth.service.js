@@ -62,17 +62,14 @@ function hasRole(roleRequired) {
     .use(hasRole(role))
     //.use(hasRole(role))
     .use(function(req, res, next){
-      console.log(req.query.csrfToken);
       var csrfToken;
       if (req.body && req.body.csrfToken) {
         csrfToken = req.body.csrfToken;
       } else if (req.query && req.query.csrfToken) {
         csrfToken = req.query.csrfToken;
       }
-      console.log(csrfToken)
       if (csrfToken) {
         try {
-          console.log(req.user.csrfTokens)
           req.user.csrf = csrfToken;
           req.user.save(function(err) {
             if (err) res.json(500, err);
