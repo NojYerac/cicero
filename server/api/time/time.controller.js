@@ -55,6 +55,23 @@ exports.destroy = function(req, res) {
   });
 };
 
+// Stop a running timer
+exports.stop = function(req, res) {
+  var search = req.params.id === 'active' ?
+    { userId : userId} :
+    { _id : req.params.id};
+  search.endTime = new Date(0);
+  Time.findOne(search, function(err, time) {
+    if (err) { return handleError(res, err); }
+    if (!time) {return res.json(404); }
+    time.endTime = req.body.endTime
+    time.save(function(err){
+      if (err) { return handleError(res, err); }
+      return res.json(200, time);
+    })
+  });
+}
+
 function handleError(res, err) {
   return res.send(500, err);
 }
