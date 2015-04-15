@@ -47,4 +47,5 @@ TimeSchema
         }
       });
   });
+
 module.exports = mongoose.model('Time', TimeSchema);

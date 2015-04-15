@@ -10,7 +10,6 @@ angular.module('ciceroApp')
 
     $scope.delete = function(user){
       User.getCSRFToken(function(res){
-        console.log(res.csrfToken);
         User.remove({ id: user._id, csrfToken: res.csrfToken });
         angular.forEach($scope.users, function(u, i) {
           if (u === user) {
@@ -21,7 +20,6 @@ angular.module('ciceroApp')
     }
 
     $scope.setUserRole = function(user) {
-      //console.log(user._id);
       if (user.selectedRole){
         User.changeRole({ id: user._id }, { role: user.selectedRole },
           angular.forEach($scope.users, function(u, i) {
