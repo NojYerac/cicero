@@ -113,7 +113,6 @@ describe('GET /api/time', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) return done(err);
-        //console.log(res.body);
         should.exist(res.body);
         done();
       });
@@ -133,7 +132,6 @@ describe('GET /api/time', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) return done(err);
-        //console.log(res.body);
         should.exist(res.body);
         userTimeId = res.body._id
         done();
@@ -149,7 +147,6 @@ describe('GET /api/time', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) return done(err);
-        console.log(res.body);
         should.exist(res.body);
         should.exist(res.body.endTime)
         done();

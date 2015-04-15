@@ -38,7 +38,6 @@ TimeSchema
       {userId: this.userId, endTime: new Date(0)},
       function(err, activeTimes) {
         if (err) throw err;
-        console.log(activeTimes);
         if (activeTimes.length > 0) {
           return next(new Error('Only one active time allowed per user'));
         } else if(false){
