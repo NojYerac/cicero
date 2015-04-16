@@ -5,7 +5,13 @@ var mongoose = require('mongoose'),
 
 var ClientSchema = new Schema({
   name: String,
-  info: String,
+  prefix: String,
+  contact : { type: Array, default: [
+    { type : 'email', label : 'Primary', value : '' },
+    { type : 'address', label : 'Primary', value : '' },
+    { type : 'phone', label : 'Primary', value : '' }
+  ]},
+  defaultRate: Number,
   active: Boolean
 });
 
