@@ -23,6 +23,11 @@ describe('Controller: AdminCtrl', function () {
         ']'
       );
 
+    $httpBackend.expectGET('/api/clients')
+      .respond(
+        '[]'
+      );
+
     scope = $rootScope.$new();
     AdminCtrl = $controller('AdminCtrl', {
       $scope: scope
@@ -50,6 +55,11 @@ describe('Controller: AdminCtrl', function () {
             '{"_id":"5510d055111eb72e78edcad6","provider":"local",' +
             '"name":"Admin","email":"admin@admin.com","__v":0,"role":"admin"}' +
           ']'
+        );
+
+      $httpBackend.expectGET('/api/clients')
+        .respond(
+          '[]'
         );
 
       scope = $rootScope.$new();
@@ -88,6 +98,11 @@ describe('Controller: AdminCtrl', function () {
             '{"_id":"5510d055111eb72e78edcad6","provider":"local",' +
             '"name":"Admin","email":"admin@admin.com","__v":0,"role":"admin"}' +
           ']'
+        );
+
+      $httpBackend.expectGET('/api/clients')
+        .respond(
+          '[]'
         );
 
       scope = $rootScope.$new();
@@ -129,6 +144,11 @@ describe('Controller: AdminCtrl', function () {
             '{"_id":"5510d055111eb72e78edcad6","provider":"local",' +
             '"name":"Admin","email":"admin@admin.com","__v":0,"role":"admin"}' +
           ']'
+        );
+
+      $httpBackend.expectGET('/api/clients')
+        .respond(
+          '[]'
         );
 
       scope = $rootScope.$new();

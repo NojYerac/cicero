@@ -1,10 +1,12 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .controller('AdminCtrl', function ($scope, $http, Auth, User) {
+  .controller('AdminCtrl', function ($scope, $http, Auth, User, Client) {
 
     // Use the User $resource to fetch all users
     $scope.users = User.query();
+
+    $scope.clients = Client.query();
 
     $scope.allowedRoles = ['admin', 'user'];
 
