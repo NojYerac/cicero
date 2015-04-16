@@ -20,7 +20,7 @@ var adminUser = new User({
 var agent, adminUserToken, adminUserId, adminTimeId,
   userAgent, userToken, userId, userTimeId;
 
-describe("GET /api/users", function() {
+describe("User API", function() {
 
   before(function(done){
     adminUser.save(function(err){

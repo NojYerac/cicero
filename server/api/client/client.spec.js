@@ -4,6 +4,7 @@ var should = require('should');
 var app = require('../../app');
 var request = require('supertest');
 var User = require('../user/user.model');
+var Client = require('./client.model')
 var user = new User({
   provider: 'local',
   name: 'Fake User',
@@ -20,7 +21,7 @@ var adminUser = new User({
 var agent, adminUserToken, adminUserId, adminTimeId,
   userAgent, userToken, userId, userTimeId;
 
-describe('GET /api/clients', function() {
+describe('Client API', function() {
 
   before(function(done){
     adminUser.save(function(err){
@@ -40,7 +41,6 @@ describe('GET /api/clients', function() {
     });
   });
 
-
   before(function(done){
     user.save(function(err) {
       if (err) return done(err);
@@ -59,10 +59,11 @@ describe('GET /api/clients', function() {
     });
   });
 
-
   after(function(done) {
     User.remove().exec().then(function() {
-      done();
+      Client.remove().exec().then(function() {
+        done();
+      });
     });
   });
 
@@ -77,4 +78,35 @@ describe('GET /api/clients', function() {
         done();
       });
   });
+
+  it('should allow an admin to add a client', function(done) {
+    var client = { name : 'Test Client', prefix : 'TEST', defaultRate: 50}
+    agent.post('/api/clients')
+      .set('Authorization', 'Bearer ' + adminUserToken)
+      .send(client)
+      .expect(201)
+      .expect('Content-Type', /json/)
+      .end(function(err, res){
+        if (err) return done(err)
+        should.exists(res.body)
+        console.log(res.body)
+        done();
+      });
+  });
+
+  it('should not allow a non-admin to add a client', function(done) {
+    var client = { name : 'Test Client', prefix : 'TEST', defaultRate: 50}
+    userAgent.post('/api/clients')
+      .set('Authorization', 'Bearer ' + userToken)
+      .send(client)
+      .expect(403)
+      .expect('Content-Type', /text\/plain/)
+      .end(function(err, res){
+        if (err) return done(err)
+        res.text.should.equal('Forbidden')
+        console.log(res.text)
+        done();
+      });
+  });
+
 });

@@ -11,12 +11,12 @@ module.exports = function(app) {
   // Insert routes below
   app.use('/api/projects', require('./api/project'));
   app.use('/api/clients', require('./api/client'));
-  app.use('/api/time', require('./api/time'));
+  app.use('/api/times', require('./api/time'));
   app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));
 
   app.use('/auth', require('./auth'));
-  
+
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')
    .get(errors[404]);

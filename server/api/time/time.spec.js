@@ -4,6 +4,7 @@ var should = require('should');
 var app = require('../../app');
 var request = require('supertest');
 var User = require('../user/user.model');
+var Time = require('./time.model')
 var user = new User({
   provider: 'local',
   name: 'Fake User',
@@ -20,7 +21,7 @@ var adminUser = new User({
 var agent, adminUserToken, adminUserId, adminTimeId,
   userAgent, userToken, userId, userTimeId;
 
-describe('GET /api/time', function() {
+describe('Time API', function() {
 
   before(function(done){
     adminUser.save(function(err){
@@ -62,12 +63,14 @@ describe('GET /api/time', function() {
 
   after(function(done) {
     User.remove().exec().then(function() {
-      done();
+      Time.remove().exec().then(function() {
+        done();
+      });
     });
   });
 
   it('should respond with JSON array', function(done) {
-    agent.get('/api/time')
+    agent.get('/api/times')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .expect(200)
       .expect('Content-Type', /json/)
@@ -85,7 +88,7 @@ describe('GET /api/time', function() {
       clientId: '1234567890abcdef1234567890abcdif',
       projectId: 'abcdef0987654321abcdef0987654321',
     };
-    agent.post('/api/time/')
+    agent.post('/api/times/')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .send(time)
       .expect(201)
@@ -106,7 +109,7 @@ describe('GET /api/time', function() {
       clientId: '1234567890abcdef1234567890abcdif',
       projectId: 'abcdef0987654321abcdef0987654321',
     };
-    agent.post('/api/time/')
+    agent.post('/api/times/')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .send(time)
       .expect(500)
@@ -125,7 +128,7 @@ describe('GET /api/time', function() {
       clientId: '1234567890abcdef1234567890abcdif',
       projectId: 'abcdef0987654321abcdef0987654321',
     };
-    userAgent.post('/api/time/')
+    userAgent.post('/api/times/')
       .set('Authorization', 'Bearer ' + userToken)
       .send(time)
       .expect(201)
@@ -140,7 +143,7 @@ describe('GET /api/time', function() {
 
   it('should stop a time', function(done){
     var time = { endTime: new Date() };
-    agent.post('/api/time/'+adminTimeId+'/stop')
+    agent.post('/api/times/'+adminTimeId+'/stop')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .send(time)
       .expect(200)
