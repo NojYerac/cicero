@@ -7,5 +7,4 @@ angular.module('ciceroApp')
       { id : '@id' },
       {}
     )
-    // AngularJS will instantiate a singleton by calling "new" on this function
   });

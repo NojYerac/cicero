@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .controller('AdminCtrl', function ($scope, $http, Auth, User, Client) {
+  .controller('AdminCtrl', function ($scope, $http, Auth, User, Modal, Client) {
 
     // Use the User $resource to fetch all users
     $scope.users = User.query();
@@ -40,5 +40,7 @@ angular.module('ciceroApp')
         user : 'primary'
       }[role]
     };
+
+    $scope.confirmUserDelete = Modal.confirm.delete($scope.delete);
 
   });
