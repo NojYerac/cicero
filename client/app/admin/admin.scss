@@ -1,3 +1,48 @@
 .trash { color:rgb(209, 91, 71); }
 
-.edit { color: rgb(127, 63, 63); }
+.dropdown-icons-only { min-width : 12px !important;}
+
+textarea {
+  height:auto;
+  /*
+  max-width:600px;
+  color:#999;
+  font-weight:400;
+  font-size:30px;
+  font-family:'Ubuntu', Helvetica, Arial, sans-serif;
+  */
+  width:100%;
+  background:#fff;
+  border-radius:3px;
+  line-height:2em;
+  box-shadow:0px 0px 5px 1px rgba(0,0,0,0.1);
+  -webkit-transition: height 2s ease; -moz-transition: height 2s ease;
+  -ms-transition: height 2s ease;
+  -o-transition: height 2s ease;
+  transition: height 2s ease;
+}
+
+.input-group.curency {
+  max-width : 222px;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove {
+  -webkit-transition:all linear 0.5s;
+  -moz-transition:all linear 0.5s;
+  -o-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+  display:block!important;
+}
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove {
+  line-height:0;
+  opacity:0;
+}
+
+.animate-show.ng-hide-add,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+  line-height:20px;
+  opacity:1;
+}

@@ -6,11 +6,13 @@ angular.module('ciceroApp')
       {
         title: 'Home',
         link: '/',
+        icon: 'home',
         requireAuth: false
       },
       {
-        title: 'Test',
-        link: '/test',
+        title: 'Timer',
+        link: '/timer',
+        icon: 'time',
         requireAuth: true
       }
     ];

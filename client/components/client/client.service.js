@@ -5,6 +5,10 @@ angular.module('ciceroApp')
     return $resource(
       '/api/clients/:id/:controller',
       { id : '@id' },
-      {}
+      {
+        update : {
+          method : 'PATCH'
+        }
+      }
     )
   });

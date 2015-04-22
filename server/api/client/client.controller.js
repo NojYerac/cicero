@@ -31,14 +31,19 @@ exports.create = function(req, res) {
 // Updates an existing client in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
-  Client.findById(req.params.id, function (err, client) {
+  Client.update({_id :req.params.id}, req.body, function (err, client) {
     if (err) { return handleError(res, err); }
     if(!client) { return res.send(404); }
-    var updated = _.merge(client, req.body);
-    updated.save(function (err) {
-      if (err) { return handleError(res, err); }
-      return res.json(200, client);
-    });
+    return res.json(204);
+    // console.log('***********\nbody\n\n' + JSON.stringify(req.body) + '\n\n');
+    // console.log('***********\nbefore merge\n\n' + client + '\n\n');
+    // _.merge(client, req.body);
+    // console.log('***********\nafter merge\n\n' + client + '\n\n');
+    // client.save(function (err, c) {
+    //   if (err) { return handleError(res, err); }
+    //   console.log('***********\nafter save\n\n' + c + '\n\n');
+    //   return res.json(200, c);
+    // });
   });
 };
 

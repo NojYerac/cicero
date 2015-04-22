@@ -9,3 +9,4 @@ dist
 *~
 *.bak
 *.swp
+npm-debug.log

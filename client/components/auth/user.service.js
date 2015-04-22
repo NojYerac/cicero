@@ -18,6 +18,10 @@ angular.module('ciceroApp')
           id:'me'
         }
       },
+      update: {
+        method: 'PATCH',
+        params:{}
+      },
       changeRole: {
         method: 'PATCH',
         params: {

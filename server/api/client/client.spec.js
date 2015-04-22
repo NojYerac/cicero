@@ -89,7 +89,6 @@ describe('Client API', function() {
       .end(function(err, res){
         if (err) return done(err)
         should.exists(res.body)
-        console.log(res.body)
         done();
       });
   });
@@ -104,7 +103,6 @@ describe('Client API', function() {
       .end(function(err, res){
         if (err) return done(err)
         res.text.should.equal('Forbidden')
-        console.log(res.text)
         done();
       });
   });

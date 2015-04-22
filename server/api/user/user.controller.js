@@ -14,7 +14,7 @@ var validationError = function(res, err) {
  * restriction: 'admin'
  */
 exports.index = function(req, res) {
-  User.find({}, '-salt -hashedPassword', function (err, users) {
+  User.find({}, '-salt -hashedPassword -csrfTokens', function (err, users) {
     if(err) return res.send(500, err);
     res.json(200, users);
   });
@@ -26,11 +26,18 @@ exports.index = function(req, res) {
 exports.create = function (req, res, next) {
   var newUser = new User(req.body);
   newUser.provider = 'local';
-  newUser.role = 'user';
+  newUser.role = newUser.role || 'user';
   newUser.save(function(err, user) {
     if (err) return validationError(res, err);
-    var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
-    res.json({ token: token });
+    // var token = jwt.sign({_id: user._id }, config.secrets.session, { expiresInMinutes: 60*5 });
+    // res.json({ token: token });
+    var u = {
+      _id : user._id,
+      name : user.name,
+      email : user.email,
+      role : user.role
+    }
+    res.json(u);
   });
 };
 
@@ -39,11 +46,26 @@ exports.create = function (req, res, next) {
  */
 exports.show = function (req, res, next) {
   var userId = req.params.id || req.user._id;
-
   User.findById(userId, function (err, user) {
     if (err) return next(err);
     if (!user) return res.send(401);
     res.json(user.profile);
+  });
+};
+
+exports.update = function (req, res, next) {
+  if (req.body._id) { delete req.body._id; }
+  if (req.user.role==='admin' && req.params.id) {
+    console.log(req);
+    var userId = req.params.id;
+  } else {
+    var userId = req.user._id;
+  }
+  console.log(req.body);
+  User.update({_id:userId}, req.body, function(err, user) {
+    if (err) return res.json(500, err);
+    if (!user) return res.json(404);
+    return res.json(user);
   });
 };
 
@@ -85,9 +107,10 @@ exports.changePassword = function(req, res, next) {
  */
 exports.role = function(req, res, next) {
   var userId = req.params._id;
+
   User.findOne({
     id: userId
-  }, '-salt -hashedPassword', function(err, user) {
+  }, '-salt -hashedPassword -csrfTokens', function(err, user) {
     if (err) return next(err);
     if (!user) return res.json(401);
     user.role = req.body.role;

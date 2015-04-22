@@ -1,10 +1,14 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .factory('project', function ($resource) {
+  .factory('Project', function ($resource) {
     return $resource(
       '/api/projects/:id/:controller',
       { id : '@id' },
-      {}
+      {
+        update : {
+          method : 'PATCH'
+        }
+      }
     );
   });

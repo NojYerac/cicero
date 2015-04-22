@@ -6,12 +6,9 @@ var mongoose = require('mongoose'),
 var ClientSchema = new Schema({
   name: String,
   prefix: String,
-  contact : { type: Array, default: [
-    { type : 'email', label : 'Primary', value : '' },
-    { type : 'address', label : 'Primary', value : '' },
-    { type : 'phone', label : 'Primary', value : '' }
-  ]},
+  contact : Array,
   defaultRate: Number,
+  associatedUsers: Array,
   active: Boolean
 });
 

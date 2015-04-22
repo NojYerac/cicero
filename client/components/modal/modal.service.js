@@ -71,6 +71,51 @@ angular.module('ciceroApp')
               del.apply(event, args);
             });
           };
+        },
+
+        /**
+         * Create a function to open an edit confirmation modal (ex. ng-click='myModalFn(name, arg1, arg2...)')
+         * @param  {Function} ed - callback, ran when edit is confirmed
+         * @return {Function}     - the function to open the modal (ex. myModalFn)
+         */
+        edit: function(ed) {
+          ed = ed || angular.noop;
+
+          /**
+           * Open an edit confirmation modal
+           * @param  {String} name   - name or info to show on modal
+           * @param  {All}           - any additional args are passed staight to del callback
+           */
+          return function() {
+            var args = Array.prototype.slice.call(arguments),
+                name = args.shift(),
+                editModal;
+
+            editModal = openModal({
+              modal: {
+                dismissable: true,
+                title: 'Confirm Edit',
+                html: '<p>Are you sure you want to edit <strong>' + name + '</strong> ?</p>',
+                buttons: [{
+                  classes: 'btn-warning',
+                  text: 'Edit',
+                  click: function(e) {
+                    editModal.close(e);
+                  }
+                }, {
+                  classes: 'btn-default',
+                  text: 'Cancel',
+                  click: function(e) {
+                    editModal.dismiss(e);
+                  }
+                }]
+              }
+            }, 'modal-warning');
+
+            editModal.result.then(function(event) {
+              ed.apply(event, args);
+            });
+          };
         }
       }
     };

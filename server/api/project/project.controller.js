@@ -2,10 +2,23 @@
 
 var _ = require('lodash');
 var Project = require('./project.model');
+var Client = require('../client/client.model');
+
 
 // Get list of projects
 exports.index = function(req, res) {
-  Project.find(function (err, projects) {
+  var query = req.query;
+  if (req.user.role !== 'admin') {
+    if (query.clientId) {
+      var clientIds = clientId.split(',');
+      for (clientId in clientIds) {
+        if (req.user.canSeeClients.indexOf(clientId) === -1) {
+          return res.json(403, {});
+        }
+      }
+    }
+  }
+  Project.find(query, function (err, projects) {
     if(err) { return handleError(res, err); }
     return res.json(200, projects);
   });
@@ -31,15 +44,23 @@ exports.create = function(req, res) {
 // Updates an existing project in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
-  Project.findById(req.params.id, function (err, project) {
-    if (err) { return handleError(res, err); }
-    if(!project) { return res.send(404); }
-    var updated = _.merge(project, req.body);
-    updated.save(function (err) {
-      if (err) { return handleError(res, err); }
-      return res.json(200, project);
-    });
+  console.log(req.body);
+  if (!req.body.name) return handleError(res, new Error('Name cannot be blank!'));
+  Client.findById(req.body.clientId, function(err, client) {
+    if (err) { return handleError(res, err); };
+    if (client) {
+      console.log(client);
+      Project.update({_id :req.params.id}, req.body, function (err, project) {
+        if (err) { return handleError(res, err); }
+        if(!project) { return res.send(404); }
+        return res.json(204);
+      });
+    } else {
+      handleError(res, new Error('Client not found!'));
+    }
   });
+
+
 };
 
 // Deletes a project from the DB.
