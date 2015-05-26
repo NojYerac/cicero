@@ -1,26 +1,34 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .directive('userEdit', function (User, Modal) {
+  .directive('userEdit', function ($log, User, Modal) {
     return {
       templateUrl: 'components/userEdit/userEdit.html',
       restrict: 'EA',
       scope : {
         user : '=user',
-        users : '=users'
+        users : '=users',
+        clients : '=clients',
+        alertError : '=alertError',
+        alertSave : '=alertSave'
       },
-      link: function (scope, element, attrs) {
-
-        scope.newUser = !scope.user._id;
+      link: function (scope) { /* (scope, element, attrs) { */
+        //$log.log(scope.alertError);
+        scope.newUser = !(scope.user && scope.user._id);
 
         scope.deleteUser = function() {
           User.getCSRFToken(function(res){
-            User.remove({ id: scope.user._id, csrfToken: res.csrfToken });
-            angular.forEach(scope.users, function(u, i) {
-              if (u === scope.user) {
-                scope.users.splice(i, 1);
-              }
-            });
+            User.remove({ id: scope.user._id, csrfToken: res.csrfToken },
+              function(data) {
+                angular.forEach(scope.users, function(u, i) {
+                  if (u === scope.user) {
+                    scope.users.splice(i, 1);
+                    scope.alertSave(data);
+                  }
+                });
+              }, function(err) {
+                scope.alertError(err);
+              });
           });
         };
 
@@ -28,8 +36,9 @@ angular.module('ciceroApp')
           User.save(scope.user, function(data){
             scope.users.push(data);
             scope.resetUser();
+            scope.alertSave();
           },function(err){
-            console.log(err);
+            scope.alertError(err);
           });
         };
 
@@ -37,9 +46,10 @@ angular.module('ciceroApp')
           if (scope.user._id) {
             User.get({id: scope.user._id}, function(data){
               scope.user = data;
+              scope.alertSave();
             }, function(err) {
-              console.log(err);
-            })
+              scope.alertError(err);
+            });
           } else {
             scope.user = {
               name: '',
@@ -79,9 +89,16 @@ angular.module('ciceroApp')
           var u = {
             name : scope.user.name,
             email : scope.user.email,
-            role : scope.user.role
+            role : scope.user.role,
+            canSeeClients : scope.user.canSeeClients
           };
-          User.update({ id : scope.user._id }, u);
+          User.update({ id : scope.user._id }, u,
+            function(data) {
+              scope.alertSave(data);
+            },
+            function(err) {
+              scope.alertError(err);
+            });
         };
 
         scope.labelClass = function(role) {
@@ -89,8 +106,42 @@ angular.module('ciceroApp')
             guest : 'default',
             admin : 'success',
             user : 'primary'
-          }[role]
+          }[role];
         };
+
+        scope._clientById = [];
+        scope.clientById = function(clientId) {
+          if (!scope._clientById[clientId]) {
+            angular.forEach(scope.clients, function(client){
+              scope._clientById[client._id] = client.name;
+            });
+          }
+          return scope._clientById[clientId];
+        };
+
+        scope.addRemoveClients = [];
+        scope.addCanSeeClients = function(addRemoveClients) {
+          angular.forEach(addRemoveClients, function(clientId) {
+            if (scope.user.canSeeClients.indexOf(clientId) === -1){
+              scope.user.canSeeClients.push(clientId);
+            }
+          });
+        };
+
+        scope.removeCanSeeClients = function(addRemoveClients) {
+          angular.forEach(scope.user.canSeeClients, function(clientId, i) {
+            if (addRemoveClients.indexOf(clientId) !== -1) {
+              scope.user.canSeeClients.splice(i, 1);
+            }
+          });
+        };
+
+        // function alertSave(data) {
+        //   //$log.log(data);
+        // }
+        // function alertError(err) {
+        //   $log.log(err);
+        // }
 
       }
     };

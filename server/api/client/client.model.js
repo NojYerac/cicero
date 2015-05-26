@@ -4,12 +4,24 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var ClientSchema = new Schema({
-  name: String,
-  prefix: String,
+  name: {
+    type: String,
+    required: true
+  },
+  prefix: {
+    type: String,
+    required: true
+  },
   contact : Array,
-  defaultRate: Number,
+  defaultRate: {
+    type: Number,
+    required: true
+  },
   associatedUsers: Array,
-  active: Boolean
+  active: {
+    type: Boolean,
+    required: true
+  },
 });
 
 module.exports = mongoose.model('Client', ClientSchema);

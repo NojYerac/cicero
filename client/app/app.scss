@@ -15,11 +15,42 @@ $fa-font-path: "/bower_components/font-awesome/fonts";
     padding: 0.2em 0;
 }
 
+.caret.caret-reversed {
+    border-top-width: 0;
+    border-bottom: 4px solid #000000;
+}
+
+.well.well-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+label.label-wide {
+  width: 100% !important;
+}
+
+.btn-xl {
+    padding: 15px 22px;
+    font-size: 24px;
+    line-height: 1.33;
+    border-radius: 6px
+}
+
+.right-click {
+  -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
 // Component styles are injected through grunt
 // injector
 @import 'account/login/login.scss';
 @import 'admin/admin.scss';
 @import 'main/main.scss';
+@import 'timer/timer.scss';
 @import 'clientEdit/clientEdit.scss';
 @import 'modal/modal.scss';
 @import 'userEdit/userEdit.scss';

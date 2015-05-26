@@ -6,7 +6,6 @@
 'use strict';
 
 var Thing = require('../api/thing/thing.model');
-var User = require('../api/user/user.model');
 
 Thing.find({}).remove(function() {
   Thing.create({
@@ -30,20 +29,104 @@ Thing.find({}).remove(function() {
   });
 });
 
-User.find({}).remove(function() {
-  User.create({
-    provider: 'local',
-    name: 'Test User',
-    email: 'test@test.com',
-    password: 'test'
-  }, {
-    provider: 'local',
-    role: 'admin',
-    name: 'Admin',
-    email: 'admin@admin.com',
-    password: 'admin'
-  }, function() {
-      console.log('finished populating users');
-    }
-  );
+var User = require('../api/user/user.model');
+var Client = require('../api/client/client.model');
+var Project = require('../api/project/project.model');
+var Time = require('../api/time/time.model');
+
+var user = new User({
+  provider: 'local',
+  name: 'Fake User',
+  email: 'test@test.com',
+  password: 'test',
+});
+var adminUser = new User({
+  provider: 'local',
+  name: 'Fake Admin User',
+  email: 'admin@admin.com',
+  password: 'admin',
+  role: 'admin'
+});
+var clientA = new Client({
+  name : 'Test Client A',
+  prefix : 'TESTA',
+  defaultRate: 50,
+  contact: [],
+  active:true
+});
+var clientU = new Client({
+  name : 'Test Client U',
+  prefix : 'TESTU',
+  defaultRate: 50,
+  contact: [],
+  active:true
+});
+var projectA = new Project({
+  name : 'Test Project A',
+  note : 'TESTA',
+  rate: 50
+});
+var projectU = new Project({
+  name : 'Test Project U',
+  note : 'TESTU',
+  rate: 50
+});
+
+var userIdA,
+    timeIdA,
+    clientIdA,
+    projectIdA,
+    userIdU,
+    timeIdU,
+    clientIdU,
+    projectIdU;
+
+Client.find({}).remove(function(){
+  User.find({}).remove(function(){
+    Project.find({}).remove(function(){
+      Time.find({}).remove(function(){
+
+        function addU() {
+          clientU.save(function(){
+            clientIdU = clientU._id;
+            projectU.clientId = clientIdU;
+            projectU.save(function(){
+              projectIdU = projectU._id;
+              user.canSeeClients = [clientIdU];
+              user.save(function() {
+                userIdU = user._id;
+                var time = new Time({
+                  clientId: clientIdU,
+                  projectId: projectIdU,
+                  userId: userIdU,
+                  startTime: new Date(Date.now() - 60 * 60 * 1000),
+                  endTime: new Date(Date.now())
+                });
+                time.save();
+              });
+            });
+          });
+        }
+
+        clientA.save(function(){
+          clientIdA = clientA._id;
+          projectA.clientId = clientIdA;
+          projectA.save(function(){
+            projectIdA = projectA._id;
+            adminUser.save(function(){
+              userIdA = adminUser._id
+              var time = new Time({
+                clientId: clientIdA,
+                projectId: projectIdA,
+                userId: userIdA,
+                startTime: new Date(Date.now() - 60 * 60 * 1000),
+                endTime: new Date(Date.now())
+              });
+              time.save(addU);
+            });
+          });
+        });
+      });
+    });
+  });
 });

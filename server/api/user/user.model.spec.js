@@ -1,5 +1,7 @@
 'use strict';
-
+/*
+global describe, before, after, beforeEach, afterEach, it
+ */
 var should = require('should');
 var app = require('../../app');
 var User = require('./user.model');
@@ -22,7 +24,10 @@ describe('User Model', function() {
 
   afterEach(function(done) {
     User.remove().exec().then(function() {
-      done();
+      User.find({}, function(err, users) {
+        users.should.have.length(0);
+        done();
+      });
     });
   });
 

@@ -1,5 +1,7 @@
 'use strict';
-
+/*
+global describe, before, after, beforeEach, afterEach, it
+ */
 var should = require('should');
 var app = require('../../app');
 var request = require('supertest');
@@ -80,7 +82,13 @@ describe('Client API', function() {
   });
 
   it('should allow an admin to add a client', function(done) {
-    var client = { name : 'Test Client', prefix : 'TEST', defaultRate: 50}
+    var client = {
+      name : 'Test Client',
+      prefix : 'TEST',
+      defaultRate: 50,
+      contact: [],
+      active:true
+    };
     agent.post('/api/clients')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .send(client)
@@ -94,7 +102,13 @@ describe('Client API', function() {
   });
 
   it('should not allow a non-admin to add a client', function(done) {
-    var client = { name : 'Test Client', prefix : 'TEST', defaultRate: 50}
+    var client = {
+      name : 'Test Client',
+      prefix : 'TEST',
+      defaultRate: 50,
+      contact: [],
+      active:true
+    };
     userAgent.post('/api/clients')
       .set('Authorization', 'Bearer ' + userToken)
       .send(client)

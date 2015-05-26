@@ -19,8 +19,9 @@ exports.setup = function (User, config) {
           return done(null, false, { message: 'This password is not correct.' });
         }
         */
-        function wait(ms) {t=(new Date()).getTime() + ms; while ((new Date()).getTime() < t) {} return false;}
-        if ( user && user.authenticate(password) ) {
+        if ( !user ) {
+          User.authenticate.apply({hashedPassword:'x'},  password)
+        } else if ( user.authenticate(password) ) {
           return done(null, user);
         }
         return done(null, false, {message:'The email or password is not correct.'});

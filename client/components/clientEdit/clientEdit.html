@@ -1,88 +1,90 @@
-<accordion-heading ng-click="client.isOpen=!client.isOpen">
-  <div>
-    {{newClient?'Create New Client':client.name}}
-    <span ng-class="['label', 'label-'+(newClient?'info':(client.active?'primary':'danger')), 'pull-right']">
-      <span ng-class="['glyphicon', 'glyphicon-' + (newClient?'plus': (client.active?'ok-circle':'ban-circle'))]"></span>
-    </span>
-  </div>
-</accordion-heading>
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-md-3 col-xs-6">
-      <label>Name:
-        <div class="input-group">
-          <input class="form-control" type="text" ng-model="client.name" ng-change="getClientPrefix()" placeholder="company name"></input>
-        </div>
-      </label>
-    </div>
-    <div class="col-md-3 col-xs-6">
-      <label>Invoice prefix:
-        <div class="input-group">
-          <input class="form-control" type="text" ng-model="client.prefix" placeholder="COMPA"></input>
-        </div>
-      </label>
-    </div>
-    <div class="col-md-3 col-xs-6">
-      <label>Default rate:
-        <div class="input-group curency">
-          <span class="input-group-addon">
-            <span class="glyphicon glyphicon-usd"></span>
-          </span>
-          <input class="form-control" type="number" step="0.01" ng-model="client.defaultRate" value="35"></input>
-        </div>
-      </label>
-    </div>
-    <div class="col-mid-1 col-xs-2">
-      <label>Active:
-        <br>
-        <button class="btn btn-default btn-checkbox-mock" ng-click="client.active=!client.active">
-          <span ng-show="client.active" class="glyphicon glyphicon-ok"></span>
-        </button>
-      </label>
-    </div>
-  </div>
-  <div class="row">
-    <div class="form-group" ng-repeat="contact in client.contact">
-      <span class="input-group">
-        <span class="input-group-btn" dropdown>
-          <button type="button" class="btn btn-default" dropdown-toggle>
-            <span ng-class="'glyphicon glyphicon-'+getContactTypeIcon(contact.type)" ></span>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right dropdown-icons-only" role="menu">
-            <li ng-repeat="thisType in ['phone','email','address']" ng-class="{ active : thisType === contact.type}">
-              <a href ng-click="contact.type=thisType">
-                <span ng-class="'glyphicon glyphicon-'+getContactTypeIcon(thisType)"></span>
-              </a>
-            </li>
-          </ul>
-          </span><!-- /btn-group -->
-          <input type="text" class="form-control" ng-model="contact.label">
-          <span class="input-group-btn">
-            <button class="btn btn-danger" ng-click="removeContact(contact)">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-          </span>
-      </span><!-- /input-group -->
-      <span ng-show="contact.type==='phone'" >
-       <input type="tel" class="form-control" ng-model="contact.value"></input>
-      </span>
-      <span ng-show="contact.type==='email'" >
-       <input type="email" class="form-control" ng-model="contact.value"></input>
-      </span>
-      <span ng-show="contact.type==='address'">
-       <textarea class="form-control" ng-keyup="autoExpand($event)" ng-model="contact.value"></textarea>
-      </span>
-    </div>
+<accordion-group is-open="isOpen">
+  <accordion-heading ng-click="isOpen=!isOpen">
     <div>
-      <button class="btn btn-default" ng-click="addContactMethod()">
-        <span title="New contact method" class="glyphicon glyphicon-plus"></span>
-      </button>
+      {{newClient?'Create New Client':client.name}}
+      <span ng-class="['label', 'label-'+(newClient?'info':(client.active?'primary':'danger')), 'pull-right']">
+        <span ng-class="['glyphicon', 'glyphicon-' + (newClient?'plus': (client.active?'ok-circle':'ban-circle'))]"></span>
+      </span>
     </div>
-    <div class="btn-group pull-right">
-      <button class="btn btn-small btn-default" ng-click="client.isOpen=false;newClient ? createClient() : editClient()">{{newClient?'Create':'Edit'}}</button>
-      <button ng-show="!newClient" class="btn btn-small btn-danger" ng-click="confirmClientDelete(client.name);">Delete</button>
-      <button class="btn btn-small btn-warning" ng-click="client.isOpen=false; resetClient()">Cancel</button>
+  </accordion-heading>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3 col-xs-6">
+        <label>Name:
+          <div class="input-group">
+            <input class="form-control" type="text" ng-model="client.name" ng-change="getClientPrefix()" placeholder="company name"></input>
+          </div>
+        </label>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <label>Invoice prefix:
+          <div class="input-group">
+            <input class="form-control" type="text" ng-model="client.prefix" placeholder="COMPA"></input>
+          </div>
+        </label>
+      </div>
+      <div class="col-md-3 col-xs-6">
+        <label>Default rate:
+          <div class="input-group curency">
+            <span class="input-group-addon">
+              <span class="glyphicon glyphicon-usd"></span>
+            </span>
+            <input class="form-control" type="number" step="0.01" ng-model="client.defaultRate" value="35"></input>
+          </div>
+        </label>
+      </div>
+      <div class="col-mid-1 col-xs-2">
+        <label>Active:
+          <br>
+          <button class="btn btn-default btn-checkbox-mock" ng-click="client.active=!client.active">
+            <span ng-show="client.active" class="glyphicon glyphicon-ok"></span>
+          </button>
+        </label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="form-group" ng-repeat="contact in client.contact">
+        <span class="input-group">
+          <span class="input-group-btn" dropdown>
+            <button type="button" class="btn btn-default" dropdown-toggle>
+              <span ng-class="'glyphicon glyphicon-'+getContactTypeIcon(contact.type)" ></span>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right dropdown-icons-only" role="menu">
+              <li ng-repeat="thisType in ['phone','email','address']" ng-class="{ active : thisType === contact.type}">
+                <a href ng-click="contact.type=thisType">
+                  <span ng-class="'glyphicon glyphicon-'+getContactTypeIcon(thisType)"></span>
+                </a>
+              </li>
+            </ul>
+            </span><!-- /btn-group -->
+            <input type="text" class="form-control" ng-model="contact.label">
+            <span class="input-group-btn">
+              <button class="btn btn-danger" ng-click="removeContact(contact)">
+                <span class="glyphicon glyphicon-remove"></span>
+              </button>
+            </span>
+        </span><!-- /input-group -->
+        <span ng-show="contact.type==='phone'" >
+         <input type="tel" class="form-control" ng-model="contact.value"></input>
+        </span>
+        <span ng-show="contact.type==='email'" >
+         <input type="email" class="form-control" ng-model="contact.value"></input>
+        </span>
+        <span ng-show="contact.type==='address'">
+         <textarea class="form-control auto-expand" ng-keyup="autoExpand($event)" ng-model="contact.value"></textarea>
+        </span>
+      </div>
+      <div>
+        <button class="btn btn-default" ng-click="addContactMethod()">
+          <span title="New contact method" class="glyphicon glyphicon-plus"></span>
+        </button>
+      </div>
+      <div class="btn-group pull-right">
+        <button class="btn btn-small btn-default" ng-click="isOpen=false;newClient ? createClient() : editClient()">{{newClient?'Create':'Edit'}}</button>
+        <button ng-show="!newClient" class="btn btn-small btn-danger" ng-click="confirmClientDelete(client.name);">Delete</button>
+        <button class="btn btn-small btn-warning" ng-click="isOpen=false; resetClient()">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
+</accordion-group>

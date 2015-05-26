@@ -7,21 +7,44 @@ var Client = require('../client/client.model');
 
 // Get list of projects
 exports.index = function(req, res) {
-  var query = req.query;
-  if (req.user.role !== 'admin') {
+  var clientIds=[],
+      query = req.query;
+  if (req.user.role === 'admin') {
     if (query.clientId) {
-      var clientIds = clientId.split(',');
-      for (clientId in clientIds) {
-        if (req.user.canSeeClients.indexOf(clientId) === -1) {
-          return res.json(403, {});
-        }
-      }
+      clientIds = query.clientId.split(',');
+    }
+  } else {
+    if (query.clientId) {
+      query.clientId.split(',').forEach(
+        function(clientId, i) {
+          if (req.user.canSeeClients.indexOf(clientId) > -1) {
+            clientIds.push(clientId);
+          } else {
+            return res.json(403, {message: 'Unauthorized to view clientId ' + clientId});
+          }
+        });
+    } else {
+      clientIds = req.user.canSeeClients
     }
   }
-  Project.find(query, function (err, projects) {
-    if(err) { return handleError(res, err); }
-    return res.json(200, projects);
-  });
+  var queryParams;
+  switch(clientIds.length) {
+    case 0:
+      queryParams = {};
+      break;
+    case 1:
+      queryParams = {clientId : clientIds[0]};
+      break;
+    default:
+      queryParams = {clientId : {$in : clientIds}};
+  }
+  Project.find(
+    queryParams,
+    function(err, projects){
+      if (err) return handleError(res, err);
+      if (!projects) return res.send(404);
+      res.json(projects);
+    });
 };
 
 // Get a single project
@@ -47,7 +70,7 @@ exports.update = function(req, res) {
   console.log(req.body);
   if (!req.body.name) return handleError(res, new Error('Name cannot be blank!'));
   Client.findById(req.body.clientId, function(err, client) {
-    if (err) { return handleError(res, err); };
+    if (err) { return handleError(res, err); }
     if (client) {
       console.log(client);
       Project.update({_id :req.params.id}, req.body, function (err, project) {

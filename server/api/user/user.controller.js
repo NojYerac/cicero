@@ -55,17 +55,16 @@ exports.show = function (req, res, next) {
 
 exports.update = function (req, res, next) {
   if (req.body._id) { delete req.body._id; }
+  var userId;
   if (req.user.role==='admin' && req.params.id) {
-    console.log(req);
-    var userId = req.params.id;
+    userId = req.params.id;
   } else {
-    var userId = req.user._id;
+    userId = req.user._id;
   }
-  console.log(req.body);
   User.update({_id:userId}, req.body, function(err, user) {
     if (err) return res.json(500, err);
     if (!user) return res.json(404);
-    return res.json(user);
+    return res.json(204);
   });
 };
 

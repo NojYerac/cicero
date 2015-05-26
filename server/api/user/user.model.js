@@ -14,6 +14,7 @@ var UserSchema = new Schema({
     default: 'user'
   },
   csrfTokens: Array,
+  canSeeClients: Array,
   hashedPassword: String,
   provider: String,
   salt: String,
@@ -82,8 +83,8 @@ UserSchema
     //return Object.keys(this.csrfTokens)[0];
   })
   .set(function(csrfToken) {
+    var tokens = [], valid=false;
     if (this.csrfTokens) {
-      var tokens = [], valid=false;
       for (var i=0; i<this.csrfTokens.length; ++i) {
         var createdAt=this.csrfTokens[i].createdAt
         if ((60*60*1000)>((new Date())-createdAt)) {

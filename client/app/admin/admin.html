@@ -16,44 +16,29 @@
       <a href>Times</a>
     </li>
   </ul>
-  <div ng-show="activeTab==='users'">
+  <div ng-show="activeTab==='users'" class="animate-tab">
     <p>
       The delete user and user index api routes are restricted to users with the
       'admin' role.
     </p>
     <accordion close-others="false">
-      <accordion-group ng-repeat="user in users" is-open="user.isOpen">
-        <user-edit user="user" users="users"></user-edit>
-      </accordion-group>
-      <accordion-group is-open="newUser.isOpen">
-        <user-edit user="newUser" users="users"></user-edit>
-      </accordion-group>
+      <user-edit user="user" users="users" clients="clients" alert-save="alertSave" alert-error="alertError" ng-repeat="user in users"></user-edit>
+      <user-edit user="newUser" users="users" clients="clients" alert-save="alertSave" alert-error="alertError"></user-edit>
     </accordion>
   </div>
-  <div ng-show="activeTab==='clients'">
+  <div ng-show="activeTab==='clients'" class="animate-tab">
     <p>Client</p>
     <accordion close-others="false">
-      <accordion-group is-open="client.isOpen" ng-repeat="client in clients" >
 
-        <client-edit client="client" clients="clients"></client-edit>
-      </accordion-group>
-      <accordion-group is-open="newClient.isOpen">
-        <accordion-heading ng-click="newClient.isOpen=!newClient.isOpen">
-          <div>
-            Create New Client
-            <span class="label label-info pull-right">
-              <span class="glyphicon glyphicon-plus"></span>
-            </span>
-          </div>
-        </accordion-heading>
-        <client-edit client="newClient" clients="clients"></client-edit>
-      </accordion-group>
+        <client-edit client="client" clients="clients"   alert-save="alertSave" alert-error="alertError" ng-repeat="client in clients"></client-edit>
+
+        <client-edit client="newClient" clients="clients"  alert-save="alertSave" alert-error="alertError"></client-edit>
     </accordion>
   </div>
-  <div ng-show="activeTab==='projects'">
+  <div ng-show="activeTab==='projects'" class="animate-tab">
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>Client:
             <select class="form-control" ng-model="selectedClient"
             ng-options="client as client.name for client in clients"
@@ -62,7 +47,7 @@
             </select>
           </label>
         </div>
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>Project:
             <select class="form-control"
             ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
@@ -71,24 +56,24 @@
             </select>
           </label>
         </div>
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>New:<br/>
             <button class="btn btn-default btn-checkbox-mock" ng-click="newProjectClick()">
               <span ng-show="newProject" class="glyphicon glyphicon-ok"></span>
             </button>
           </label>
         </div>
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>Name:
             <input type="text" class="form-control" ng-model="thisProject.name"></input>
           </label>
         </div>
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>Note:
             <input type="text" class="form-control" ng-model="thisProject.note"></input>
           </label>
         </div>
-        <div class="col-md-2 col-xs-4">
+        <div class="col-lg-2 col-md-4 col-sm-4">
           <label>Rate:
             <div class="input-group curency">
               <span class="input-group-addon">
@@ -118,34 +103,48 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-12 col-xs-12">
-          <div class="alert alert-success animate-show" ng-show="thisProject.saved">
-            <span class="glyphicon glyphicon-ok"></span>
-            Save Successfull!
-          </div>
-          <div class="alert alert-danger animate-show" ng-show="thisProject.error">
-            <span class="glyphicon glyphicon glyphicon-exclamation-sign"></span>
-            An error occured!
-          </div>
-        </div>
-      </div>
     </div>
   </div>
-  <div ng-show="activeTab==='times'">
+  <div ng-show="activeTab==='times'" class="animate-tab">
     <table class="table table-striped table-hover">
       <thead>
-        <tr><th>Name</th><th>Client</th><th>Project</th><th>Start</th><th>End</th></tr>
+        <tr>
+          <th ng-repeat="tH in timeTableHeadings">
+            <span
+            ng-class="{active : sortTimesBy === tH.name}"
+            ng-click="setSortTimesBy(tH.name)">
+              {{tH.formattedName}}
+              <span ng-show="sortTimesBy === tH.name">
+                <span ng-class="{'caret':true, 'caret-reversed':reverseTimeSort}"></span>
+              </span>
+            </span>
+          </th>
+        </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="time in times">
-          <td>{{time.name}}</td>
-          <td>{{time.client}}</td>
-          <td>{{tiem.project}}</td>
+        <tr ng-dblclick="editTimeModal(time, users, clients, projects)" right-click="editTimeModal(time, users, clients, projects); $event.preventDefault();" ng-repeat="time in times | orderBy:sortTimesBy:reverseTimeSort" class="animate-show">
+          <td>{{userById(time.userId)}}</td>
+          <td>{{clientById(time.clientId)}}</td>
+          <td>{{projectById(time.projectId)}}</td>
           <td>{{time.startTime.toLocaleString()}}</td>
           <td>{{time.endTime.toLocaleString()}}</td>
         </tr>
       </tbody>
     </table>
+  </div>
+  <div style="position:fixed;bottom:0px;left:0;z-index:10;">
+    <div class="container">
+      <div class="row" >
+        <div class="col-md-5 col-xs-12">
+          <alert class="animate-show" ng-repeat="alert in alerts" type="{{alert.type}}">
+            <div>
+              <span ng-if="alert.icon" ng-class="['glyphicon', 'glyphicon-' + alert.icon]"></span>
+              {{alert.message}}
+            </div>
+            <pre ng-if="alert.err" ng-bind="alert.err"></pre>
+          </alert>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

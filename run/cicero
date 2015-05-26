@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+2&>1
+source /etc/envvar
+cd /usr/src/app
+npm start

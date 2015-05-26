@@ -7,7 +7,7 @@ module.exports = function(config) {
     basePath: '',
 
     // testing framework to use (jasmine/mocha/qunit/...)
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'mocha'],
 
     // list of files / patterns to load in the browser
     files: [
@@ -21,6 +21,7 @@ module.exports = function(config) {
       'client/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
       'client/bower_components/lodash/dist/lodash.compat.js',
       'client/bower_components/angular-socket-io/socket.js',
+      'client/bower_components/angular-animate/angular-animate.js',
       'client/app/app.js',
       //'client/app/app.coffee',
       'client/app/**/*.js',

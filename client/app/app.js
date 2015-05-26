@@ -1,5 +1,7 @@
 'use strict';
-
+/**
+ * @module ciceroApp
+ */
 angular.module('ciceroApp', [
   'ngCookies',
   'ngResource',

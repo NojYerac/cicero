@@ -1,29 +1,40 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .directive('clientEdit', function (Client, Modal) {
+  .directive('clientEdit', function ($log, Client, Modal) {
     return {
       templateUrl: 'components/clientEdit/clientEdit.html',
       scope : {
         client: '=client',
-        clients: '=clients'
+        clients: '=clients',
+        alertError: '=alertError',
+        alertSave: '=alertSave'
       },
       restrict: 'EA',
-      link: function (scope, element, attrs) {
-        scope.newClient = !scope.client._id
+      link: function (scope) /*(scope, element, attrs)*/ {
+        scope.newClient = !(scope.client && scope.client._id);
 
         scope.getContactTypeIcon = function(type) {
           return {
             email : 'envelope',
             address : 'map-marker',
             phone : 'phone'
-          }[type] || ''
+          }[type] || '';
         };
 
         scope.autoExpand = function(e) {
-          var element = typeof e === 'object' ? e.target : document.getElementById(e);
-      		var scrollHeight = element.scrollHeight + 2;
-          element.style.height =  scrollHeight + "px";
+          if (!e) {
+            var element =
+              typeof e === 'object' ? e.target : document.getElementById(e);
+            var scrollHeight = element.scrollHeight + 2;
+            element.style.height =  scrollHeight + 'px';
+          } else {
+            var elements = document.getElementsByClassName('auto-expand');
+            angular.forEach(elements, function(el) {
+              scope.autoExpand(el);
+            });
+            return;
+          }
         };
 
         scope.getClientPrefix = function() {
@@ -37,8 +48,8 @@ angular.module('ciceroApp')
             Client.get({id: scope.client._id}, function(data){
               scope.client = data;
             }, function(err) {
-              console.log(err);
-            })
+              scope.alertError(err);
+            });
           } else {
             scope.client = {
               name : '',
@@ -62,8 +73,9 @@ angular.module('ciceroApp')
                 scope.clients.splice(i, 1);
               }
             });
+            scope.alertSave();
           }, function(err){
-            console.log(err);
+            scope.alertError(err);
           });
         };
 
@@ -71,9 +83,10 @@ angular.module('ciceroApp')
 
         scope.editClient = function() {
           Client.update({id: scope.client._id}, scope.client, function(data) {
-            scope.client.saved=true;
+            //$log.log('editClient data => ' + data);
+            scope.alertSave(data);
           }, function(err) {
-            console.log(err);
+            scope.alertError(err);
           });
         };
 
@@ -81,8 +94,9 @@ angular.module('ciceroApp')
           Client.save(scope.client, function(data) {
             scope.clients.push(data);
             scope.resetClient();
+            scope.alertSave();
           }, function(err) {
-            console.log(err);
+            scope.alertError(err);
           });
         };
 

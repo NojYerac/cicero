@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var Client = require('./client.model');
+var validate = require('../validate');
 
 // Get list of clients
 exports.index = function(req, res) {
@@ -31,19 +32,18 @@ exports.create = function(req, res) {
 // Updates an existing client in the DB.
 exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
+  var vError = validate.update( req.body, [
+    {name:'name',type:String,required:true},
+    {name: 'prefix', type:String, required:true},
+    {name: 'defaultRate', type: Number, required:true},
+    {name: 'active', type: Boolean, required: true}]);
+  if (vError) {
+    return res.json(500, vError);
+  }
   Client.update({_id :req.params.id}, req.body, function (err, client) {
     if (err) { return handleError(res, err); }
     if(!client) { return res.send(404); }
     return res.json(204);
-    // console.log('***********\nbody\n\n' + JSON.stringify(req.body) + '\n\n');
-    // console.log('***********\nbefore merge\n\n' + client + '\n\n');
-    // _.merge(client, req.body);
-    // console.log('***********\nafter merge\n\n' + client + '\n\n');
-    // client.save(function (err, c) {
-    //   if (err) { return handleError(res, err); }
-    //   console.log('***********\nafter save\n\n' + c + '\n\n');
-    //   return res.json(200, c);
-    // });
   });
 };
 

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+2&>1
+source /etc/envvar
+exec /usr/bin/mongod\
+ --config=/etc/mongodb.conf\
+ --dbpath=/var/lib/mongodb

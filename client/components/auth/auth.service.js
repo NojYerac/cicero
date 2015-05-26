@@ -1,6 +1,10 @@
 'use strict';
-
 angular.module('ciceroApp')
+  /**
+   * @module Auth
+   *
+   * @exports login,logout, createUser, changePassword, getCSRFToken, getCurrentUser, isLoggedIn, isLoggedInAsync, isAdmin, getToken
+   */
   .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q) {
     var currentUser = {};
     if($cookieStore.get('token')) {
@@ -11,7 +15,7 @@ angular.module('ciceroApp')
 
       /**
        * Authenticate user and save token
-       *
+       * @memberOf class:Auth
        * @param  {Object}   user     - login info
        * @param  {Function} callback - optional
        * @return {Promise}
@@ -105,7 +109,7 @@ angular.module('ciceroApp')
           return cb(csrf);
         },
         function(err){
-          return cb(err)
+          return cb(err);
         }).$promise;
       },
 

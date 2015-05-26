@@ -17,7 +17,8 @@ module.exports = function (grunt) {
     cdnify: 'grunt-google-cdn',
     protractor: 'grunt-protractor-runner',
     injector: 'grunt-asset-injector',
-    buildcontrol: 'grunt-build-control'
+    buildcontrol: 'grunt-build-control',
+    dock: 'grunt-dock'
   });
 
   // Time how long tasks take. Can help when optimizing build times
@@ -70,13 +71,13 @@ module.exports = function (grunt) {
         tasks: ['injector:css']
       },
       mochaTest: {
-        files: ['server/**/*.spec.js'],
+        files: ['server/**/*.js'],
         tasks: ['env:test', 'mochaTest']
       },
       jsTest: {
         files: [
-          '<%= yeoman.client %>/{app,components}/**/*.spec.js',
-          '<%= yeoman.client %>/{app,components}/**/*.mock.js'
+          '<%= yeoman.client %>/{app,components}/**/*.js',
+          '<%= yeoman.client %>/{app,components}/**/*.js'
         ],
         tasks: ['newer:jshint:all', 'karma']
       },
@@ -204,7 +205,7 @@ module.exports = function (grunt) {
           },
           callback: function (nodemon) {
             nodemon.on('log', function (event) {
-              console.log(event.colour);
+              grunt.log.writeln(event.colour);
             });
 
             // opens browser on initial server start
@@ -429,7 +430,7 @@ module.exports = function (grunt) {
     karma: {
       unit: {
         configFile: 'karma.conf.js',
-        singleRun: false
+        singleRun: true
       }
     },
 
@@ -542,6 +543,36 @@ module.exports = function (grunt) {
         }
       }
     },
+
+    //build docker image
+    dock: {
+      'cicero-dev': {
+        // The Dockerfile to use
+        dockerfile: 'Dockerfile',
+
+        options: {
+
+          // Bind the 80 port to the host 8081
+          // Links this container to the node one. So Docker env variable will be accessible
+          // Bind 2 directories to the container (config, NGINX startup script, default index.html file)
+          start:  {
+            "PortBindings": {
+              "9000/tcp": [ { "HostPort": "9000" } ],
+              //"35729/tcp" : [ { "HostPort": "35729" }] //server-reload
+            },
+            /*
+            //"Links": ["node:latest"],
+            "Binds":[
+              __dirname + "/dist:/usr/src/app/dist",
+              //__dirname + "/bundle/nginx:/etc/nginx/sites-available",
+            ]
+            */
+          },
+          // For logs, sdtout & stderr
+          logs:   { stdout: true, stderr: true }
+        }
+      }
+    }
   });
 
   // Used for delaying livereload until after server has restarted
@@ -663,5 +694,10 @@ module.exports = function (grunt) {
     'newer:jshint',
     'test',
     'build'
+  ]);
+
+  grunt.registerTask('dockerize', [
+    'default',
+    'dock'
   ]);
 };

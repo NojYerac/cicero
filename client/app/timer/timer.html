@@ -1,0 +1,149 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+  <h1>Timer</h1>
+  <h2>{{displayElapsed()}}</h2>
+  <div class="row">
+    <div class="col-lg-2 col-md-3 col-sm-4">
+      <label class="label-wide">Client:
+        <select class="form-control" ng-model="selectedClient"
+        ng-options="client as client.name for client in clients"
+        ng-change="populateProjectOptions()">
+          <option value="">Select a client</option>
+        </select>
+      </label>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4">
+      <label class="label-wide">Project:
+        <select class="form-control"
+        ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
+        ng-options="project as project.name for project in projectOptions">
+          <option value="">Select a project</option>
+        </select>
+      </label>
+    </div>
+    <div class="row">
+      <div class="visible-xs-block col-xs-4"></div>
+      <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+        <label>New:<br/>
+          <button class="btn btn-default btn-checkbox-mock" ng-click="newProject=!newProject">
+            <span ng-show="newProject" class="glyphicon glyphicon-ok"></span>
+          </button>
+        </label>
+      </div>
+      <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+        <label>Batch:<br/>
+          <button class="btn btn-default btn-checkbox-mock" ng-click="manualEntry=!manualEntry">
+            <span ng-show="manualEntry" class="glyphicon glyphicon-ok"></span>
+          </button>
+        </label>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-show="newProject">
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Name:
+        <input type="text" class="form-control" ng-model="thisProject.name"></input>
+      </label>
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Note:
+        <input type="text" class="form-control" ng-model="thisProject.note"></input>
+      </label>
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Rate:
+        <div class="input-group curency">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-usd"></span>
+          </span>
+          <input class="form-control" type="number" step="0.01" ng-model="thisProject.rate"></input>
+        </div>
+      </label>
+    </div>
+  </div>
+  <div class="row" ng-hide="manualEntry">
+    <div class="col-lg-4 col-md-3 col-sm-2 col-xs-1"></div>
+    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-10">
+      <div class="btn-group btn-group-justified">
+        <a href ng-class="['btn', 'btn-xl', timerActive?'btn-danger':'btn-success']" ng-click="timerActive?stopTimer():startTimer();">
+          {{ timerActive ? 'Stop Timer' : 'Start Timer' }}
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4 col-xs-1"></div>
+  </div>
+  <div ng-show="manualEntry">
+    <div ng-repeat="time in theseTimes">
+      <div class="row">
+        <div class="col-sm-4">
+          <label class="label-wide">Start Time:
+            <input class="form-control" type="datetime-local" ng-model="time.startTime"></input>
+          </label>
+        </div>
+        <div class="col-md-1 visible-md-block"></div>
+        <div class="col-sm-4">
+          <label class="label-wide">End Time:
+            <input class="form-control" type="datetime-local" ng-model="time.endTime"></input>
+          </label>
+        </div>
+        <div class="row">
+          <div class="visible-xs-block col-xs-3"></div>
+          <div class="col-sm-1 col-xs-2">&nbsp;<br>
+            <button class="btn btn-md btn-default" ng-click="addTime($index)">
+              <span class="glyphicon glyphicon-plus"></span>
+            </button>
+          </div>
+          <div class="col-sm-1 col-xs-2">&nbsp;<br>
+            <button class="btn btn-md btn-default" ng-disabled="theseTimes.length<2" ng-click="removeTime($index)">
+              <span class="glyphicon glyphicon-remove"></span>
+            </button>
+          </div>
+          <div class="col-sm-2 col-xs-3">
+            <label class="lable-wide">Minutes:<br>
+              <span style="font-size:2em" ng-bind="getMinutesElapsed(time)"></span>
+              <span class="btn-group-vertical" style="margin-bottom: 12px">
+                <button class="btn btn-xs" style="height: 12px" ng-click="minutePlus(time)">
+                  <span class="caret caret-reversed" style="margin-bottom: 5px"></span>
+                </button>
+                <button class="btn btn-xs" style="height:12px" ng-click="minuteMinus(time)">
+                  <span class="caret" style="margin-bottom: 12px"></span>
+                </button>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pull-right">
+      <button class="btn btn-lg btn-primary" ng-click="saveTimes()">Save</button>
+    </div>
+  </div>
+  <div>
+    <h4>
+      {{displayElapsed()}}
+    </h4>
+    Client: {{thisTime.clientId}}<br>
+    Project: {{thisTime.projectId}}<br>
+    User: {{thisTime.userId}}<br>
+    Start Time: {{thisTime.startTime.toLocaleString()}}<br>
+    <a href ng-click="stopTimer()">End Time</a>: {{ thisTime.endTime.getTime() === zeroDay.getTime() ? 'Active' : thisTime.endTime.toLocaleString() }}<br>
+
+    ElapsedTime: {{(timeActive?Date.now():thisTime.endTime.getTime())-thisTime.startTime.getTime()}} = {{elapsedTime}}
+  </div>
+  <div style="position:fixed;bottom:0px;left:0;z-index:10;">
+    <div class="container">
+      <div class="row" >
+        <div class="col-md-5 col-xs-12">
+          <alert class="animate-show" ng-repeat="alert in alerts" type="{{alert.type}}">
+            <div>
+              <span ng-if="alert.icon" ng-class="['glyphicon', 'glyphicon-' + alert.icon]"></span>
+              {{alert.message}}
+            </div>
+            <pre ng-if="alert.err" ng-bind="alert.err"></pre>
+          </alert>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
