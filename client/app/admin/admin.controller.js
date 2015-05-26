@@ -14,7 +14,7 @@ angular.module('ciceroApp')
       role: 'user'
     };
 
-    $scope.activeTab = 'users';
+    $scope.activeTab = 'times';
     if (window.location.hash) {
       $scope.activeTab = window.location.hash.slice(1);
     }
@@ -67,7 +67,7 @@ angular.module('ciceroApp')
 
     $scope.timeTableHeadings = [
       {formattedName: 'User', name: 'user'},
-      {formattedName: 'Client', name: 'cilent'},
+      {formattedName: 'Client', name: 'client'},
       {formattedName: 'Project', name: 'project'},
       {formattedName: 'Start Time', name: 'startTime'},
       {formattedName: 'End Time', name: 'endTime'},

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .controller('LoginCtrl', function ($scope, Auth, $location, $window) {
+  .controller('LoginCtrl', function ($scope, Auth, $location) {
     $scope.user = {};
     $scope.errors = {};
 
@@ -15,7 +15,7 @@ angular.module('ciceroApp')
         })
         .then( function() {
           // Logged in, redirect to home
-          $location.path('/');
+          $location.path('/timer');
         })
         .catch( function(err) {
           $scope.errors.other = err.message;
@@ -23,7 +23,7 @@ angular.module('ciceroApp')
       }
     };
 
-    $scope.loginOauth = function(provider) {
-      $window.location.href = '/auth/' + provider;
-    };
+    // $scope.loginOauth = function(provider) {
+    //   $window.location.href = '/auth/' + provider;
+    // };
   });

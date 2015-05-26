@@ -119,18 +119,6 @@
       <button class="btn btn-lg btn-primary" ng-click="saveTimes()">Save</button>
     </div>
   </div>
-  <div>
-    <h4>
-      {{displayElapsed()}}
-    </h4>
-    Client: {{thisTime.clientId}}<br>
-    Project: {{thisTime.projectId}}<br>
-    User: {{thisTime.userId}}<br>
-    Start Time: {{thisTime.startTime.toLocaleString()}}<br>
-    <a href ng-click="stopTimer()">End Time</a>: {{ thisTime.endTime.getTime() === zeroDay.getTime() ? 'Active' : thisTime.endTime.toLocaleString() }}<br>
-
-    ElapsedTime: {{(timeActive?Date.now():thisTime.endTime.getTime())-thisTime.startTime.getTime()}} = {{elapsedTime}}
-  </div>
   <div style="position:fixed;bottom:0px;left:0;z-index:10;">
     <div class="container">
       <div class="row" >

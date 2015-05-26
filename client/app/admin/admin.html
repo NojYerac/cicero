@@ -3,37 +3,45 @@
 <div class="container">
   <h1>Administration</h1>
   <ul class="nav nav-tabs">
+    <li role="presentation" ng-class="{active : activeTab === 'times'}" ng-click="activeTab = 'times'">
+      <a href>Times</a>
+    </li>
+    <li role="presentation" ng-class="{active : activeTab === 'projects'}" ng-click="activeTab = 'projects'">
+      <a href>Projects</a>
+    </li>
     <li role="presentation" ng-class="{active : activeTab === 'users'}" ng-click="activeTab = 'users'">
       <a href>Users</a>
     </li>
     <li role="presentation" ng-class="{active : activeTab === 'clients'}" ng-click="activeTab = 'clients'">
       <a href>Clients</a>
     </li>
-    <li role="presentation" ng-class="{active : activeTab === 'projects'}" ng-click="activeTab = 'projects'">
-      <a href>Projects</a>
-    </li>
-    <li role="presentation" ng-class="{active : activeTab === 'times'}" ng-click="activeTab = 'times'">
-      <a href>Times</a>
-    </li>
   </ul>
-  <div ng-show="activeTab==='users'" class="animate-tab">
-    <p>
-      The delete user and user index api routes are restricted to users with the
-      'admin' role.
-    </p>
-    <accordion close-others="false">
-      <user-edit user="user" users="users" clients="clients" alert-save="alertSave" alert-error="alertError" ng-repeat="user in users"></user-edit>
-      <user-edit user="newUser" users="users" clients="clients" alert-save="alertSave" alert-error="alertError"></user-edit>
-    </accordion>
-  </div>
-  <div ng-show="activeTab==='clients'" class="animate-tab">
-    <p>Client</p>
-    <accordion close-others="false">
-
-        <client-edit client="client" clients="clients"   alert-save="alertSave" alert-error="alertError" ng-repeat="client in clients"></client-edit>
-
-        <client-edit client="newClient" clients="clients"  alert-save="alertSave" alert-error="alertError"></client-edit>
-    </accordion>
+  <div ng-show="activeTab==='times'" class="animate-tab">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th ng-repeat="tH in timeTableHeadings">
+            <span
+            ng-class="{active : sortTimesBy === tH.name}"
+            ng-click="setSortTimesBy(tH.name)">
+              {{tH.formattedName}}
+              <span ng-show="sortTimesBy === tH.name">
+                <span ng-class="{'caret':true, 'caret-reversed':reverseTimeSort}"></span>
+              </span>
+            </span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-dblclick="editTimeModal(time, users, clients, projects)" right-click="editTimeModal(time, users, clients, projects); $event.preventDefault();" ng-repeat="time in times | orderBy:sortTimesBy:reverseTimeSort" class="animate-show">
+          <td>{{userById(time.userId)}}</td>
+          <td>{{clientById(time.clientId)}}</td>
+          <td>{{projectById(time.projectId)}}</td>
+          <td>{{time.startTime.toLocaleString()}}</td>
+          <td>{{time.endTime.toLocaleString()}}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
   <div ng-show="activeTab==='projects'" class="animate-tab">
     <div class="container-fluid">
@@ -105,32 +113,24 @@
       </div>
     </div>
   </div>
-  <div ng-show="activeTab==='times'" class="animate-tab">
-    <table class="table table-striped table-hover">
-      <thead>
-        <tr>
-          <th ng-repeat="tH in timeTableHeadings">
-            <span
-            ng-class="{active : sortTimesBy === tH.name}"
-            ng-click="setSortTimesBy(tH.name)">
-              {{tH.formattedName}}
-              <span ng-show="sortTimesBy === tH.name">
-                <span ng-class="{'caret':true, 'caret-reversed':reverseTimeSort}"></span>
-              </span>
-            </span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr ng-dblclick="editTimeModal(time, users, clients, projects)" right-click="editTimeModal(time, users, clients, projects); $event.preventDefault();" ng-repeat="time in times | orderBy:sortTimesBy:reverseTimeSort" class="animate-show">
-          <td>{{userById(time.userId)}}</td>
-          <td>{{clientById(time.clientId)}}</td>
-          <td>{{projectById(time.projectId)}}</td>
-          <td>{{time.startTime.toLocaleString()}}</td>
-          <td>{{time.endTime.toLocaleString()}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div ng-show="activeTab==='users'" class="animate-tab">
+    <p>
+      The delete user and user index api routes are restricted to users with the
+      'admin' role.
+    </p>
+    <accordion close-others="false">
+      <user-edit user="user" users="users" clients="clients" alert-save="alertSave" alert-error="alertError" ng-repeat="user in users"></user-edit>
+      <user-edit user="newUser" users="users" clients="clients" alert-save="alertSave" alert-error="alertError"></user-edit>
+    </accordion>
+  </div>
+  <div ng-show="activeTab==='clients'" class="animate-tab">
+    <p>Client</p>
+    <accordion close-others="false">
+
+        <client-edit client="client" clients="clients"   alert-save="alertSave" alert-error="alertError" ng-repeat="client in clients"></client-edit>
+
+        <client-edit client="newClient" clients="clients"  alert-save="alertSave" alert-error="alertError"></client-edit>
+    </accordion>
   </div>
   <div style="position:fixed;bottom:0px;left:0;z-index:10;">
     <div class="container">

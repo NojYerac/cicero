@@ -4,12 +4,6 @@ angular.module('ciceroApp')
   .controller('NavbarCtrl', function ($scope, $location, Auth) {
     $scope.menu = [
       {
-        title: 'Home',
-        link: '/',
-        icon: 'home',
-        requireAuth: false
-      },
-      {
         title: 'Timer',
         link: '/timer',
         icon: 'time',

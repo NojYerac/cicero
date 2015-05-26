@@ -14,7 +14,7 @@ angular.module('ciceroApp', [
   .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/timer'
       });
 
     $locationProvider.html5Mode(true);

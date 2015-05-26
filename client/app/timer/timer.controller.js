@@ -156,8 +156,8 @@ angular.module('ciceroApp')
         return;
       }
       var startTime = new Date();
-      startTime.setMilliseconds(0);
-      startTime.setSeconds(0);
+      // startTime.setMilliseconds(0);
+      // startTime.setSeconds(0);
       angular.extend($scope.thisTime, {
         startTime : startTime,
         endTime : new Date(0),
@@ -167,7 +167,7 @@ angular.module('ciceroApp')
       if ($scope.thisTime._id) { delete $scope.thisTime._id; }
       Time.start($scope.thisTime,
         function(data){
-          $scope.thisTime = data;
+          angular.extend($scope.thisTime, { _id : data._id} );
           $scope.timerActive=true;
           $scope.startClicking();
         }, function(err){
@@ -176,10 +176,10 @@ angular.module('ciceroApp')
     };
 
     $scope.stopTimer = function() {
-      var endTime = new Date();
-      endTime.setMilliseconds(0);
-      endTime.setSeconds(0);
-      $scope.thisTime.endTime = endTime;
+      angular.extend($scope.thisTime, {
+        endTime: $scope.trunkateTime(new Date()),
+        startTime: $scope.trunkateTime($scope.thisTime.startTime)
+      });
       Time.stop({id:$scope.thisTime._id || 'active'}, $scope.thisTime,
         function(){
           // $log.log(data);
