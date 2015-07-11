@@ -1,11 +1,11 @@
 // Generated on 2015-03-09 using generator-angular-fullstack 2.0.13
 'use strict';
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
   var localConfig;
   try {
     localConfig = require('./server/config/local.env');
-  } catch(e) {
+  } catch (e) {
     localConfig = {};
   }
 
@@ -18,8 +18,10 @@ module.exports = function (grunt) {
     protractor: 'grunt-protractor-runner',
     injector: 'grunt-asset-injector',
     buildcontrol: 'grunt-build-control',
-    dock: 'grunt-dock'
+    //dock: 'grunt-dock'
   });
+
+  require('./node_modules/grunt-dock/tasks/dock')(grunt);
 
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
@@ -61,7 +63,8 @@ module.exports = function (grunt) {
           '<%= yeoman.client %>/{app,components}/**/*.js',
           '!<%= yeoman.client %>/{app,components}/**/*.spec.js',
           '!<%= yeoman.client %>/{app,components}/**/*.mock.js',
-          '!<%= yeoman.client %>/app/app.js'],
+          '!<%= yeoman.client %>/app/app.js'
+        ],
         tasks: ['injector:scripts']
       },
       injectCss: {
@@ -83,12 +86,14 @@ module.exports = function (grunt) {
       },
       injectSass: {
         files: [
-          '<%= yeoman.client %>/{app,components}/**/*.{scss,sass}'],
+          '<%= yeoman.client %>/{app,components}/**/*.{scss,sass}'
+        ],
         tasks: ['injector:sass']
       },
       sass: {
         files: [
-          '<%= yeoman.client %>/{app,components}/**/*.{scss,sass}'],
+          '<%= yeoman.client %>/{app,components}/**/*.{scss,sass}'
+        ],
         tasks: ['sass', 'autoprefixer']
       },
       gruntfile: {
@@ -203,14 +208,14 @@ module.exports = function (grunt) {
           env: {
             PORT: process.env.PORT || 9000
           },
-          callback: function (nodemon) {
-            nodemon.on('log', function (event) {
+          callback: function(nodemon) {
+            nodemon.on('log', function(event) {
               grunt.log.writeln(event.colour);
             });
 
             // opens browser on initial server start
-            nodemon.on('config:update', function () {
-              setTimeout(function () {
+            nodemon.on('config:update', function() {
+              setTimeout(function() {
                 require('open')('http://localhost:8080/debug?port=5858');
               }, 500);
             });
@@ -224,7 +229,7 @@ module.exports = function (grunt) {
       target: {
         src: '<%= yeoman.client %>/index.html',
         ignorePath: '<%= yeoman.client %>/',
-        exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/', /bootstrap.css/, /font-awesome.css/ ]
+        exclude: [/bootstrap-sass-official/, /bootstrap.js/, '/json3/', '/es5-shim/', /bootstrap.css/, /font-awesome.css/]
       }
     },
 
@@ -476,7 +481,7 @@ module.exports = function (grunt) {
           compass: false
         },
         files: {
-          '.tmp/app/app.css' : '<%= yeoman.client %>/app/app.scss'
+          '.tmp/app/app.css': '<%= yeoman.client %>/app/app.scss'
         }
       }
     },
@@ -498,11 +503,12 @@ module.exports = function (grunt) {
         },
         files: {
           '<%= yeoman.client %>/index.html': [
-              ['{.tmp,<%= yeoman.client %>}/{app,components}/**/*.js',
-               '!{.tmp,<%= yeoman.client %>}/app/app.js',
-               '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.spec.js',
-               '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.mock.js']
+            ['{.tmp,<%= yeoman.client %>}/{app,components}/**/*.js',
+              '!{.tmp,<%= yeoman.client %>}/app/app.js',
+              '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.spec.js',
+              '!{.tmp,<%= yeoman.client %>}/{app,components}/**/*.mock.js'
             ]
+          ]
         }
       },
 
@@ -544,44 +550,120 @@ module.exports = function (grunt) {
       }
     },
 
-    //build docker image
     dock: {
-      'cicero-dev': {
-        // The Dockerfile to use
-        dockerfile: 'Dockerfile',
 
-        options: {
+      options: {
+      //
+      //   // Docker connection options
+      //   // For this example, assume it is a Boot2Docker config.
+      //   // By default, Boot2Docker only accepts secure connection.
+      //   docker: {
+      //     protocol: 'https',
+      //     host: '192.168.59.103',
+      //     port: '2376',
+      //
+      //     ca: fs.readFileSync(caPath),
+      //     cert: fs.readFileSync(certPath),
+      //     key: fs.readFileSync(keyPath)
+      //   },
 
-          // Bind the 80 port to the host 8081
-          // Links this container to the node one. So Docker env variable will be accessible
-          // Bind 2 directories to the container (config, NGINX startup script, default index.html file)
-          start:  {
-            "PortBindings": {
-              "9000/tcp": [ { "HostPort": "9000" } ],
-              //"35729/tcp" : [ { "HostPort": "35729" }] //server-reload
-            },
-            /*
-            //"Links": ["node:latest"],
-            "Binds":[
-              __dirname + "/dist:/usr/src/app/dist",
-              //__dirname + "/bundle/nginx:/etc/nginx/sites-available",
-            ]
-            */
+        images: {
+          // The 'simple' image
+          'cicero-mongo': {
+            // The Dockerfile to use
+            dockerfile: './mongo/Dockerfile',
+
+            // Options for dockerode
+            options: {
+
+              // When starting the container:
+              // Bind the container port to the host (same port)
+              // +
+              // Bind the './bundle' directory to the '/bundle' container one
+              start:  {
+                //"PortBindings": { "27017/tcp": [ { "HostPort": "27017" } ] },
+                "Binds":[__dirname + "/data/db:/data/db"]
+              },
+
+              // For the logs command, we want to display stdout
+              logs: { stdout: true, stderr: true }
+            }
           },
-          // For logs, sdtout & stderr
-          logs:   { stdout: true, stderr: true }
+          'cicero-app': {
+            // The Dockerfile to use
+            dockerfile: './Dockerfile',
+
+            // Options for dockerode
+            options: {
+
+              // When starting the container:
+              // Bind the container port to the host (same port)
+              // +
+              // Bind the './bundle' directory to the '/bundle' container one
+              start:  {
+                PortBindings: {
+                  '9000/tcp': [{
+                    HostPort: "9000"
+                  }]
+                },
+                Links: ['cicero-mongo:mongo']
+              },
+
+              // For the logs command, we want to display stdout
+              logs: { stdout: true, stderr: true }
+            }
+          }
         }
       }
     }
+
+    //build docker image
+    /*
+    dock: {
+      options: {
+        images: {
+          'cicero-mongo': {
+            dockerfile: 'mongo/Dockerfile',
+            options: {
+              start: {
+                Binds: [__dirname + 'data/db:/data/db']
+              },
+              logs: {
+                stdout: true,
+                stderr: true
+              }
+            },
+            'cicero-app': {
+              dockerfile: 'Dockerfile',
+              options: {
+                start: {
+                  PortBindings: {
+                    '9000/tcp': [{
+                      HostPort: 9000
+                    }]
+                  },
+                  Links: ['cicero-mongo:mongo']
+                },
+                logs: {
+                  stdout: true,
+                  stderr: true
+                },
+              }
+            }
+          }
+        }
+      }
+    }
+    */
   });
 
   // Used for delaying livereload until after server has restarted
-  grunt.registerTask('wait', function () {
+  grunt.registerTask('wait', function() {
     grunt.log.ok('Waiting for server reload...');
 
     var done = this.async();
 
-    setTimeout(function () {
+    setTimeout(function() {
       grunt.log.writeln('Done waiting!');
       done();
     }, 1500);
@@ -591,7 +673,7 @@ module.exports = function (grunt) {
     this.async();
   });
 
-  grunt.registerTask('serve', function (target) {
+  grunt.registerTask('serve', function(target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'env:all', 'env:prod', 'express:prod', 'wait', 'open', 'express-keepalive']);
     }
@@ -624,7 +706,7 @@ module.exports = function (grunt) {
     ]);
   });
 
-  grunt.registerTask('server', function () {
+  grunt.registerTask('server', function() {
     grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
     grunt.task.run(['serve']);
   });
@@ -636,9 +718,7 @@ module.exports = function (grunt) {
         'env:test',
         'mochaTest'
       ]);
-    }
-
-    else if (target === 'client') {
+    } else if (target === 'client') {
       return grunt.task.run([
         'clean:server',
         'env:all',
@@ -648,9 +728,7 @@ module.exports = function (grunt) {
         'autoprefixer',
         'karma'
       ]);
-    }
-
-    else if (target === 'e2e') {
+    } else if (target === 'e2e') {
       return grunt.task.run([
         'clean:server',
         'env:all',
@@ -663,9 +741,7 @@ module.exports = function (grunt) {
         'express:dev',
         'protractor'
       ]);
-    }
-
-    else grunt.task.run([
+    } else grunt.task.run([
       'test:server',
       'test:client'
     ]);

@@ -20,7 +20,7 @@ var mongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 
 module.exports = function(app) {
-  var env = app.get('env');
+  var env = config.env; //app.get('env');
 
   app.set('views', config.root + '/server/views');
   app.engine('html', require('ejs').renderFile);
@@ -38,13 +38,13 @@ module.exports = function(app) {
     secret: config.secrets.session,
     resave: true,
     saveUninitialized: true,
-    store: new mongoStore({ mongoose_connection: mongoose.connection })
+    store: new mongoStore({ mongooseConnection: mongoose.connection })
   }));
-  
+
   if ('production' === env) {
     app.use(favicon(path.join(config.root, 'public', 'favicon.ico')));
     app.use(express.static(path.join(config.root, 'public')));
-    app.set('appPath', config.root + '/public');
+    app.set('appPath', path.join(config.root, 'public'));
     app.use(morgan('dev'));
   }
 
@@ -52,7 +52,7 @@ module.exports = function(app) {
     app.use(require('connect-livereload')());
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(path.join(config.root, 'client')));
-    app.set('appPath', 'client');
+    app.set('appPath', config.root + '/client');
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be last
   }

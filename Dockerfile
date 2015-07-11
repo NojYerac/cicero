@@ -1,25 +1,34 @@
 FROM debian:jessie
-# runit depends on /etc/inittab which is not present in debian:jessie
-RUN touch /etc/inittab
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q wkhtmltopdf node mongodb npm runit
-RUN ln -s /usr/bin/nodejs /usr/bin/node
 
-#pass env through runit
-ADD ./run/runit_shim /usr/sbin/runit_shim
-RUN chmod 700 /usr/sbin/runit_shim
-ADD ./run/cicero /etc/service/cicero/run
-RUN chmod 700 /etc/service/cicero/run
-ADD ./run/mongodb /etc/service/mongodb/run
-RUN chmod 700 /etc/service/mongodb/run
+# Run OS updates
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+RUN apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade -y
 
-
-ADD dist /usr/src/app
-
-#TODO: prefixer is broken somewhere...
-RUN ["ln", "-s", "/usr/src/app/dist/{public,client}"]
-
+# Install app dependencies
+RUN apt-get install -y -q wkhtmltopdf node npm
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-EXPOSE 9000
-ENV NODE_ENV prod
-ENTRYPOINT ["/usr/sbin/runit_shim"]
+# Create a non-root user
+RUN useradd -s /sbin/nologin -c 'Cicero' cicero
+
+# add the app files
+ADD ./dist/package.json /cicero/package.json
+RUN cd /cicero; npm install --production
+ADD ./dist/server /cicero/server
+ADD ./dist/public /cicero/public
+RUN ["chown", "-R", "cicero", "/cicero"]
+
+# Run as non-root user
+USER cicero
+# Set the node environment
+ENV NODE_ENV production
+
+#TODO: prefixer is broken somewhere...
+RUN ln -s /cicero/public /cicero/client
+
+# Open http port
+EXPOSE 8080
+
+# Run the app
+CMD nodejs /cicero/server/app.js
