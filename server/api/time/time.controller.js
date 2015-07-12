@@ -7,7 +7,7 @@ var Time = require('./time.model');
 exports.index = function(req, res) {
   Time.find(function (err, times) {
     if(err) { return handleError(res, err); }
-    return res.json(200, times);
+    return res.status(200).json(times);
   });
 };
 
@@ -15,7 +15,7 @@ exports.index = function(req, res) {
 exports.show = function(req, res) {
   Time.findById(req.params.id, function (err, time) {
     if(err) { return handleError(res, err); }
-    if(!time) { return res.send(404); }
+    if(!time) { return res.sendStatus(404); }
     return res.json(time);
   });
 };
@@ -30,12 +30,12 @@ exports.create = function(req, res) {
   if (req.user.role !== 'admin') {
     req.body.userId = req.user._id;
     if (req.user.canSeeClients.indexOf(req.body.clientId)===-1) {
-      return res.send(403);
+      return res.sendStatus(403);
     }
   }
   Time.create(req.body, function(err, time) {
     if(err) { return handleError(res, err); }
-    return res.json(201, time);
+    return res.status(201).json(time);
   });
 };
 
@@ -44,11 +44,11 @@ exports.update = function(req, res) {
   if(req.body._id) { delete req.body._id; }
   Time.findById(req.params.id, function (err, time) {
     if (err) { return handleError(res, err); }
-    if(!time) { return res.send(404); }
+    if(!time) { return res.sendStatus(404); }
     var updated = _.merge(time, req.body);
     updated.save(function (err) {
       if (err) { return handleError(res, err); }
-      return res.json(200, time);
+      return res.status(200).json(time);
     });
   });
 };
@@ -57,10 +57,10 @@ exports.update = function(req, res) {
 exports.destroy = function(req, res) {
   Time.findById(req.params.id, function (err, time) {
     if(err) { return handleError(res, err); }
-    if(!time) { return res.send(404); }
+    if(!time) { return res.sendStatus(404); }
     time.remove(function(err) {
       if(err) { return handleError(res, err); }
-      return res.send(204);
+      return res.sendStatus(204);
     });
   });
 };
@@ -73,11 +73,11 @@ exports.stop = function(req, res) {
   //search.endTime = new Date(0);
   Time.findOne(search, function(err, time) {
     if (err) { return handleError(res, err); }
-    if (!time) {return res.json(404); }
+    if (!time) {return res.sendStatus(404); }
     //time.endTime = req.body.endTime
     Time.update({_id: time._id}, {endTime: req.body.endTime}, function(err){
       if (err) { return handleError(res, err); }
-      return res.send(204);
+      return res.sendStatus(204);
     });
   });
 };
@@ -88,7 +88,7 @@ exports.latest = function(req, res) {
   Time.findOne(search, {}, {sort : {startTime: -1}},
     function(err, time) {
       if (err) return handleError(res, err);
-      if (!time) return res.send(404);
+      if (!time) return res.sendStatus(404);
       if (
         req.user.role !== "admin" &&
         req.user.canSeeClients.indexOf(time.clientId) === -1
@@ -100,5 +100,5 @@ exports.latest = function(req, res) {
 };
 
 function handleError(res, err) {
-  return res.json(500, err);
+  return res.status(500).json(err);
 }

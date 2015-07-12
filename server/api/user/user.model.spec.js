@@ -6,13 +6,14 @@ var should = require('should');
 var app = require('../../app');
 var User = require('./user.model');
 
-var user = new User({
-  provider: 'local',
-  name: 'Fake User',
-  email: 'test@test.com',
-  password: 'password',
-  csrfTokens: []
-});
+var _user = {
+    provider: 'local',
+    name: 'Fake User',
+    email: 'test@test.com',
+    password: 'password',
+    csrfTokens: []
+  },
+  user;
 
 describe('User Model', function() {
   before(function(done) {
@@ -21,6 +22,11 @@ describe('User Model', function() {
       done();
     });
   });
+
+  beforeEach(function(done) {
+    user = new User(_user);
+    done();
+  })
 
   afterEach(function(done) {
     User.remove().exec().then(function() {
@@ -38,8 +44,17 @@ describe('User Model', function() {
     });
   });
 
+  it('should succeed when saving a valid user', function(done) {
+    user.save(function(error, user) {
+      should.not.exist(error);
+      should.exist(user);
+      done();
+    })
+  })
+
   it('should fail when saving a duplicate user', function(done) {
-    user.save(function() {
+    user.save(function(err) {
+      should.not.exists(null);
       var userDup = new User(user);
       userDup.save(function(err) {
         should.exist(err);
@@ -52,6 +67,8 @@ describe('User Model', function() {
     user.email = '';
     user.save(function(err) {
       should.exist(err);
+      err.should.have.property('message', 'User validation failed');
+      err.errors.email.should.have.property('message', 'Email cannot be blank');
       done();
     });
   });
@@ -65,13 +82,16 @@ describe('User Model', function() {
   });
 
   it("should change the role to admin", function(done) {
-    user.email = 'test@test.com';
-    user.role = 'admin';
     user.save(function(err) {
       should.not.exist(err);
-      user.role.should.equal('admin');
-      done();
-    });
+      user.role = 'admin';
+      user.save(function(err) {
+        should.not.exist(err);
+        user.role.should.equal('admin');
+        done();
+      });
+    })
+
   });
 
   it("should return a CSRF token", function(done){
@@ -82,8 +102,8 @@ describe('User Model', function() {
   });
 
   it ("should invalidate a bad CSRF token", function(done) {
+    var token=user.csrf;
     user.csrfTokens.should.have.length(1);
-    var token=user.csrfTokens[0].token;
     try {
       user.csrf='abc';
     } catch (err) {
@@ -93,12 +113,11 @@ describe('User Model', function() {
     done();
   });
 
-  it ("should expire old CSRF tokens", function(done){
+  it ("should expire old CSRF tokens", function(done) {
     var token = user.csrf
-    user.csrfTokens.should.have.length(2);
-    //make tokens 2 hours old
+    user.csrfTokens.should.have.length(1);
+    //make token 2 hours old
     user.csrfTokens[0].createdAt = new Date(Date.now() - (2*60*60*1000));
-    user.csrfTokens[1].createdAt = new Date(Date.now() - (2*60*60*1000));
     try {
       user.csrf=token;
     } catch (err) {

@@ -8,7 +8,7 @@ var validate = require('../validate');
 exports.index = function(req, res) {
   Client.find(function (err, clients) {
     if(err) { return handleError(res, err); }
-    return res.json(200, clients);
+    return res.status(200).json(clients);
   });
 };
 
@@ -16,7 +16,7 @@ exports.index = function(req, res) {
 exports.show = function(req, res) {
   Client.findById(req.params.id, function (err, client) {
     if(err) { return handleError(res, err); }
-    if(!client) { return res.send(404); }
+    if(!client) { return res.sendStatus(404); }
     return res.json(client);
   });
 };
@@ -25,7 +25,7 @@ exports.show = function(req, res) {
 exports.create = function(req, res) {
   Client.create(req.body, function(err, client) {
     if(err) { return handleError(res, err); }
-    return res.json(201, client);
+    return res.status(201).json(client);
   });
 };
 
@@ -38,12 +38,12 @@ exports.update = function(req, res) {
     {name: 'defaultRate', type: Number, required:true},
     {name: 'active', type: Boolean, required: true}]);
   if (vError) {
-    return res.json(500, vError);
+    return res.status(500).json(vError);
   }
   Client.update({_id :req.params.id}, req.body, function (err, client) {
     if (err) { return handleError(res, err); }
-    if(!client) { return res.send(404); }
-    return res.json(204);
+    if(!client) { return res.sendStatus(404); }
+    return res.sendStatus(204);
   });
 };
 
@@ -51,14 +51,14 @@ exports.update = function(req, res) {
 exports.destroy = function(req, res) {
   Client.findById(req.params.id, function (err, client) {
     if(err) { return handleError(res, err); }
-    if(!client) { return res.send(404); }
+    if(!client) { return res.sendStatus(404); }
     client.remove(function(err) {
       if(err) { return handleError(res, err); }
-      return res.send(204);
+      return res.sendStatus(204);
     });
   });
 };
 
 function handleError(res, err) {
-  return res.send(500, err);
+  return res.status(500).send(err);
 }
