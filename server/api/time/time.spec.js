@@ -170,7 +170,6 @@ describe('Time API', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) return done(err);
-        //console.log(res.body);
         should.exist(res.body);
         timeIdA = res.body._id
         done();
@@ -312,7 +311,6 @@ describe('Time API', function() {
       .expect(500)
       .expect('Content-Type', /json/)
       .end(function(err, res) {
-        //console.log(res);
         if (err) return done(err);
         should.exist(res.body);
         _.extend( time, {
@@ -327,7 +325,6 @@ describe('Time API', function() {
           .expect(403)
           //.expect('Content-Type', /text\/plain/)
           .end(function(err, res) {
-            //console.log(res);
             if (err) return done(err);
             should.exist(res.body);
             done();
