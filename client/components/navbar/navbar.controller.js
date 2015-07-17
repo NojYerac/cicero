@@ -7,7 +7,14 @@ angular.module('ciceroApp')
         title: 'Timer',
         link: '/timer',
         icon: 'time',
-        requireAuth: true
+        requireAuth: true,
+        requireAdmin: false
+      },
+      {
+        title: 'Admin',
+        link: '/admin',
+        requireAuth: true,
+        requireAdmin: true
       }
     ];
 
@@ -23,5 +30,15 @@ angular.module('ciceroApp')
 
     $scope.isActive = function(route) {
       return route === $location.path();
+    };
+
+    $scope.showItem = function(item) {
+      if (item.requireAuth) {
+        if (!$scope.isLoggedIn()) { return false; }
+      }
+      if (item.requireAdmin) {
+        if (!$scope.isAdmin()) { return false; }
+      }
+      return true;
     };
   });
