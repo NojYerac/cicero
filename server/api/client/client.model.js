@@ -3,6 +3,21 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+var ContactSchema = new Schema({
+  type: {
+    type: String,
+    required: true
+  },
+  label: {
+    type: String,
+    required: true
+  },
+  value: {
+    type: String,
+    required: true
+  }
+});
+
 var ClientSchema = new Schema({
   name: {
     type: String,
@@ -12,11 +27,7 @@ var ClientSchema = new Schema({
     type: String,
     required: true
   },
-  contact : Array,
-  defaultRate: {
-    type: Number,
-    required: true
-  },
+  contact : [ContactSchema],
   associatedUsers: Array,
   active: {
     type: Boolean,
