@@ -6,14 +6,26 @@ var crypto = require('crypto');
 var config = require('../../config/environment');
 
 var authTypes = ['github', 'twitter', 'facebook', 'google'];
+
+var CSRFTokenSchema = new Schema({
+  token: {
+    type: String,
+    required: true
+  },
+  createdAt: Date
+});
+
 var UserSchema = new Schema({
   name: String,
-  email: { type: String, lowercase: true },
+  email: {
+    type: String,
+    lowercase: true
+  },
   role: {
     type: String,
     default: 'user'
   },
-  csrfTokens: Array,
+  csrfTokens: [CSRFTokenSchema],
   canSeeClients: Array,
   hashedPassword: String,
   provider: String,
@@ -43,8 +55,8 @@ UserSchema
   .virtual('profile')
   .get(function() {
     return {
-      '_id' : this._id,
-      'email' : this.email,
+      '_id': this._id,
+      'email': this.email,
       'name': this.name,
       'role': this.role
     };
@@ -64,40 +76,29 @@ UserSchema
 UserSchema
   .virtual('csrf')
   .get(function() {
-    if (this.csrfTokens) {
-      var tokens = [];
-      for (var i=0; i<this.csrfTokens.length; ++i) {
-        var createdAt=this.csrfTokens[i].createdAt
-        if ((60*60*12)<((new Date())-createdAt)) {
-          tokens.push(this.csrfTokens[i]);
-        }
-      }
-    }
-    //this.csrfTokens = this.csrfTokens || {};
-    var token={
-      token : crypto.randomBytes(20).toString('hex'),
-      createdAt : new Date()
+    this.csrfTokens = this.csrfTokens || [];
+    this.csrfTokens.forEach(function(token, index) {
+      if (Date.now() - token.createdAt > (60 * 60 * 1000))
+        this.csrfTokens.splice(index, 1);
+    });
+    var token = {
+      token: crypto.randomBytes(20).toString('hex'),
+      createdAt: new Date()
     }
     this.csrfTokens.push(token);
     return token.token
-    //return Object.keys(this.csrfTokens)[0];
   })
   .set(function(csrfToken) {
-    var tokens = [], valid=false;
-    if (this.csrfTokens) {
-      for (var i=0; i<this.csrfTokens.length; ++i) {
-        var createdAt=this.csrfTokens[i].createdAt
-        if ((60*60*1000)>((new Date())-createdAt)) {
-          if (csrfToken === this.csrfTokens[i].token) {
-            valid = true;
-          }
-          else {
-            tokens.push(this.csrfTokens[i]);
-          }
-        }
+    var valid = false;
+    this.csrfTokens.forEach(function(token, index, tokens) {
+      //console.log('token: %s\nage:   %s\n',token, Date.now()-token.createdAt);
+      if (token.createdAt < Date.now() - 60 * 60 * 1000)
+        tokens.splice(index, 1);
+      else if (csrfToken === token.token) {
+        valid = true;
+        tokens.splice(index, 1);
       }
-      this.csrfTokens=tokens;
-    }
+    });
     if (!valid) throw (Error('Invalid CSRF token'));
   });
 
@@ -126,15 +127,17 @@ UserSchema
   .path('email')
   .validate(function(value, respond) {
     var self = this;
-    this.constructor.findOne({email: value}, function(err, user) {
-      if(err) throw err;
-      if(user) {
-        if(self.id === user.id) return respond(true);
+    this.constructor.findOne({
+      email: value
+    }, function(err, user) {
+      if (err) throw err;
+      if (user) {
+        if (self.id === user.id) return respond(true);
         return respond(false);
       }
       respond(true);
     });
-}, 'The specified email address is already in use.');
+  }, 'The specified email address is already in use.');
 
 UserSchema
   .path('role')
@@ -156,11 +159,9 @@ UserSchema
 
     if (!validatePresenceOf(this.hashedPassword) && authTypes.indexOf(this.provider) === -1) {
       next(new Error('Invalid password'));
-    }
-    else if (!validatePresenceOf(this.role) || config.userRoles.indexOf(this.role) === -1) {
+    } else if (!validatePresenceOf(this.role) || config.userRoles.indexOf(this.role) === -1) {
       next(new Error('Invalid role'));
-    }
-    else
+    } else
       next();
   });
 

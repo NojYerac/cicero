@@ -22,16 +22,19 @@ var agent, adminUserToken, adminUserId, adminTimeId,
 
 describe("User API", function() {
 
-  before(function(done){
-    adminUser.save(function(err){
+  before(function(done) {
+    adminUser.save(function(err) {
       if (err) return done(err);
       adminUserId = adminUser._id
-      agent=request.agent(app);
+      agent = request.agent(app);
       agent.post('/auth/local')
-        .send({"email":"admin@admin.com","password":"admin"})
+        .send({
+          "email": "admin@admin.com",
+          "password": "admin"
+        })
         .expect(200)
         .expect('Content-Type', /json/)
-        .end(function(err, res){
+        .end(function(err, res) {
           if (err) return done(err);
           should.exist(res.body.token);
           adminUserToken = res.body.token;
@@ -41,16 +44,19 @@ describe("User API", function() {
   });
 
 
-  before(function(done){
+  before(function(done) {
     user.save(function(err) {
       if (err) return done(err);
       userId = user._id;
-      userAgent=request.agent(app);
+      userAgent = request.agent(app);
       userAgent.post('/auth/local')
-        .send({"email":"test@test.com","password":"password"})
+        .send({
+          "email": "test@test.com",
+          "password": "password"
+        })
         .expect(200)
         .expect('Content-Type', /json/)
-        .end(function(err, res){
+        .end(function(err, res) {
           if (err) return done(err);
           should.exist(res.body.token);
           userToken = res.body.token;
@@ -83,15 +89,15 @@ describe("User API", function() {
       .expect(200)
       .expect('Content-Type', /json/)
       .end(function(err, res) {
-          if (err) return done(err);
-          res.body.should.be.instanceof(Object);
-          res.body.email.should.equal('admin@admin.com');
-          res.body._id.should.be.instanceof(String);
-          done();
-        });
+        if (err) return done(err);
+        res.body.should.be.instanceof(Object);
+        res.body.email.should.equal('admin@admin.com');
+        res.body._id.should.be.instanceof(String);
+        done();
+      });
   });
 
-  it('should respond with a CSRF token', function(done){
+  it('should respond with a CSRF token', function(done) {
     agent.get('/api/users/csrf')
       .set('Authorization', 'Bearer ' + adminUserToken)
       .expect(200)

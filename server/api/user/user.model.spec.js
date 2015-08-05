@@ -122,6 +122,8 @@ describe('User Model', function() {
       user.csrf=token;
     } catch (err) {
       should.exist(err);
+      err.should.have.property('message')
+      err.message.should.equal('Invalid CSRF token');
     }
     user.csrfTokens.should.have.length(0);
     done();
