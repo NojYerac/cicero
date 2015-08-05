@@ -8,6 +8,13 @@ var validate = require('../validate');
 exports.index = function(req, res) {
   Client.find(function (err, clients) {
     if(err) { return handleError(res, err); }
+    if (req.user.role !== 'admin') {
+      clients.forEach(function(client, index) {
+        if (req.user.canSeeClients.indexOf(client) === -1) {
+          clients.splice(index, 1);
+        }
+      });
+    }
     return res.status(200).json(clients);
   });
 };
