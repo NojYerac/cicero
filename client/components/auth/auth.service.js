@@ -7,7 +7,7 @@ angular.module('ciceroApp')
    */
   .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q) {
     var currentUser = {};
-    if($cookieStore.get('token')) {
+    if ($cookieStore.get('token')) {
       currentUser = User.get();
     }
 
@@ -86,7 +86,9 @@ angular.module('ciceroApp')
       changePassword: function(oldPassword, newPassword, callback) {
         var cb = callback || angular.noop;
 
-        return User.changePassword({ id: currentUser._id }, {
+        return User.changePassword({
+          id: currentUser._id
+        }, {
           oldPassword: oldPassword,
           newPassword: newPassword
         }, function(user) {
@@ -104,13 +106,15 @@ angular.module('ciceroApp')
        */
       getCSRFToken: function(callback) {
         var cb = callback || angular.noop;
-        return User.getCSRFToken({ id: currentUser._id},
-        function(csrf){
-          return cb(csrf);
-        },
-        function(err){
-          return cb(err);
-        }).$promise;
+        return User.getCSRFToken({
+            id: currentUser._id
+          },
+          function(csrf) {
+            return cb(csrf);
+          },
+          function(err) {
+            return cb(err);
+          }).$promise;
       },
 
       /**
@@ -135,16 +139,14 @@ angular.module('ciceroApp')
        * Waits for currentUser to resolve before checking if user is logged in
        */
       isLoggedInAsync: function(cb) {
-        if(currentUser.hasOwnProperty('$promise')) {
+        if (currentUser.hasOwnProperty('$promise')) {
           currentUser.$promise.then(function() {
             cb(true);
           }).catch(function() {
             cb(false);
           });
-        } else if(currentUser.hasOwnProperty('role')) {
-          cb(true);
         } else {
-          cb(false);
+          cb(this.isLoggedIn());
         }
       },
 
