@@ -1,6 +1,6 @@
 {
   "source" : {
-    "includePattern" : ".+\\.js(doc)?",
+    "includePattern" : ".+\\.js(doc)?$",
     "excludePattern" : ".*(node_modules|bower_components).*"
   }
 }
