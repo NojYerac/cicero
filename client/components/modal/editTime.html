@@ -22,41 +22,49 @@
       <!-- <option value="project._id" ng-repeat="project in projects | filter:time.clientId as availableProjects">{{project.name}}</option> -->
     </select>
   </label>
-  <label class="label-wide">Start Time:
-    <input class="form-control" type="datetime-local" ng-model="time.startTime"></input>
-  </label>
-  <label class="label-wide">End Time:
-    <input class="form-control" type="datetime-local" ng-model="time.endTime"></input>
-  </label>
-
+  <label>Start Time:</label><br>
+  <div class="col-xs-6">
+    <span class="input-group">
+      <input type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="time.startTime" show-weeks="false" is-open="!!startDateOpen" close-text="Close">
+      </input>
+      <span class="input-group-btn">
+        <a type="button" class="btn btn-default" ng-click="startDateOpen=!startDateOpen">
+          <i class="glyphicon glyphicon-calendar"></i>
+        </a>
+      </span>
+    </span>
+  </div>
+  <div class="col-xs-6">
+    <timepicker ng-model="time.startTime" show-meridian="true" show-spinners="false"></timepicker>
+  </div>
+    <!-- <input class="form-control" type="datetime-local" ng-model="time.startTime"></input> -->
+  <label>End Time:</label><br>
+  <div class="col-xs-6">
+    <span class="input-group">
+      <input type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="time.endTime" show-weeks="false" is-open="!!endDateOpen" close-text="Close">
+      </input>
+      <span class="input-group-btn">
+        <a type="button" class="btn btn-default" ng-click="endDateOpen=!endDateOpen">
+          <i class="glyphicon glyphicon-calendar"></i>
+        </a>
+      </span>
+    </span>
+  </div>
+  <div class="col-xs-6">
+    <timepicker ng-model="time.endTime" show-meridian="true" show-spinners="false"></timepicker>
+  </div>
   <p style="text-align:center; font-size:3em">
     {{('0'+time.interval().getUTCHours()).slice(-2)}}
-    <span class="btn-group-vertical">
-      <button class="btn btn-xs" ng-click="time.endTime.setTime(time.endTime.getTime()+3600000)">
-        <span class="caret caret-reversed"></span>
-      </button>
-      <button class="btn btn-xs" ng-click="time.endTime.setTime(time.endTime.getTime()-3600000)">
-        <span class="caret"></span>
-      </button>
-    </span>
+    :
     {{('0'+time.interval().getUTCMinutes()).slice(-2)}}
-    <span class="btn-group-vertical">
-      <button class="btn btn-xs" ng-click="time.endTime.setTime(time.endTime.getTime()+60000)">
-        <span class="caret caret-reversed"></span>
-      </button>
-      <button class="btn btn-xs" ng-click="time.endTime.setTime(time.endTime.getTime()-60000)">
-        <span class="caret"></span>
-      </button>
-    </span>
-    {{('0'+time.interval().getUTCSeconds()).slice(-2)}}
-    <span class="btn-group-vertical" style="margin-bottom: 12px">
+    <!-- <span class="btn-group-vertical" style="margin-bottom: 12px">
       <button class="btn btn-xs" style="height: 12px" ng-click="time.endTime.setTime(time.endTime.getTime()+1000)">
         <span class="caret caret-reversed" style="margin-bottom: 5px"></span>
       </button>
       <button class="btn btn-xs" style="height: 12px" ng-click="time.endTime.setTime(time.endTime.getTime()-1000)">
         <span class="caret" style="margin-bottom: 12px"></span>
       </button>
-    </span>
+    </span> -->
   </p>
 </div>
 <div class="modal-footer">

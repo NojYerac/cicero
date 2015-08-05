@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('ciceroApp')
-  .factory('Modal', function ($rootScope, $modal, $log, Time) {
+  .factory('Modal', function($rootScope, $modal, $log, Time) {
     /**
      * Opens a modal
      * @param  {Object} scope      - an object to be merged with modal's scope
@@ -43,8 +43,8 @@ angular.module('ciceroApp')
            */
           return function() {
             var args = Array.prototype.slice.call(arguments),
-                name = args.shift(),
-                deleteModal;
+              name = args.shift(),
+              deleteModal;
 
             deleteModal = openModal({
               modal: {
@@ -88,8 +88,8 @@ angular.module('ciceroApp')
            */
           return function() {
             var args = Array.prototype.slice.call(arguments),
-                name = args.shift(),
-                editModal;
+              name = args.shift(),
+              editModal;
 
             editModal = openModal({
               modal: {
@@ -133,10 +133,13 @@ angular.module('ciceroApp')
            * @param  {Array} clients [description]
            * @param  {Array} projects [description]
            * @param  {Array} args [description]
+           * @param  {Event} e
            * @return {Promise}      [description]
            */
           return function() {
             var args = Array.prototype.slice.call(arguments);
+            var e = args.pop();
+            e.preventDefault();
             var time = args.shift();
             //$log.log(time);
             var users = args.shift();
@@ -146,7 +149,7 @@ angular.module('ciceroApp')
             var projects = args.shift();
             //$log.log(projects);
             if (time.interval === undefined) {
-              time.interval = function(newInterval){
+              time.interval = function(newInterval) {
                 if (arguments.length === 0) {
                   return new Date(time.endTime.getTime() - time.startTime.getTime());
 
@@ -177,7 +180,9 @@ angular.module('ciceroApp')
                 }, {
                   classes: 'btn-primary',
                   text: 'Edit',
-                  disabled: function(){return !(time.userId && time.clientId && time.projectId);},
+                  disabled: function() {
+                    return !(time.userId && time.clientId && time.projectId);
+                  },
                   click: function(e) {
                     editModal.close(modalScope.time, e);
                   }
@@ -191,7 +196,9 @@ angular.module('ciceroApp')
                 }]
               },
               resetTime: function() {
-                Time.get({id:time._id}, function(data){
+                Time.get({
+                  id: time._id
+                }, function(data) {
                   angular.extend(time, {
                     userId: data.userId,
                     clientId: data.clientId,
@@ -221,7 +228,7 @@ angular.module('ciceroApp')
               'modal-primary', //class
               'components/modal/editTime.html'); //templateUrl
 
-            editModal.result.then(function(time, args){
+            editModal.result.then(function(time, args) {
               $log.log(time);
               ed.apply(time, time, args);
             });
