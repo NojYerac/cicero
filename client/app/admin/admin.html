@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-dblclick="editTimeModal(time, users, clients, projects)" right-click="editTimeModal(time, users, clients, projects); $event.preventDefault();" ng-repeat="time in times | orderBy:sortTimesBy:reverseTimeSort" class="animate-show">
+        <tr ng-dblclick="editTimeModal(time, users, clients, projects, $event)" right-click="editTimeModal(time, users, clients, projects, $event);" ng-repeat="time in times | orderBy:sortTimesBy:reverseTimeSort" class="animate-show">
           <td>{{userById(time.userId)}}</td>
           <td>{{clientById(time.clientId)}}</td>
           <td>{{projectById(time.projectId)}}</td>
@@ -50,7 +50,7 @@
           <label>Client:
             <select class="form-control" ng-model="selectedClient"
             ng-options="client as client.name for client in clients"
-            ng-change="populateProjectOptions();console.log(selectedClient);">
+            ng-change="populateProjectOptions()">
               <option value="">Select a client</option>
             </select>
           </label>

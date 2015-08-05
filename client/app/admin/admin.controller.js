@@ -144,8 +144,10 @@ angular.module('ciceroApp')
     $scope.populateProjectOptions = function() {
       if (!($scope.selectedClient && $scope.selectedClient._id)) {
         $scope.projectOptions = [];
+        $scope.thisProject.clientId = '';
         return;
       }
+      $scope.thisProject.clientId = $scope.selectedClient._id;
       Project.query({clientId:$scope.selectedClient._id},
         function(data) {
           $scope.projectOptions = data;
