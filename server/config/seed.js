@@ -4,7 +4,7 @@
  */
 
 'use strict';
-
+var async = require('async');
 // var Thing = require('../api/thing/thing.model');
 //
 // Thing.find({}).remove(function() {
@@ -81,52 +81,82 @@ var userIdA,
     clientIdU,
     projectIdU;
 
-Client.find({}).remove(function(){
-  User.find({}).remove(function(){
-    Project.find({}).remove(function(){
-      Time.find({}).remove(function(){
+function clearDb(callback) {
+  async.parallel([
+    function(cb) {Client.find({}).remove(cb)},
+    function(cb) {User.find({}).remove(cb)},
+    function(cb) {Project.find({}).remove(cb)},
+    function(cb) {Time.find({}).remove(cb)},
+  ], callback);
+}
 
-        function addU() {
-          clientU.save(function(){
-            clientIdU = clientU._id;
-            projectU.clientId = clientIdU;
-            projectU.save(function(){
-              projectIdU = projectU._id;
-              user.canSeeClients = [clientIdU];
-              user.save(function() {
-                userIdU = user._id;
-                var time = new Time({
-                  clientId: clientIdU,
-                  projectId: projectIdU,
-                  userId: userIdU,
-                  startTime: new Date(Date.now() - 60 * 60 * 1000),
-                  endTime: new Date(Date.now())
-                });
-                time.save();
-              });
-            });
-          });
-        }
-
-        clientA.save(function(){
-          clientIdA = clientA._id;
-          projectA.clientId = clientIdA;
-          projectA.save(function(){
-            projectIdA = projectA._id;
-            adminUser.save(function(){
-              userIdA = adminUser._id
-              var time = new Time({
-                clientId: clientIdA,
-                projectId: projectIdA,
-                userId: userIdA,
-                startTime: new Date(Date.now() - 60 * 60 * 1000),
-                endTime: new Date(Date.now())
-              });
-              time.save(addU);
-            });
-          });
-        });
+function addU(callback) {
+  async.series([
+    function(cb) { clientU.save(cb); },
+    function(cb) {
+      clientIdU = clientU._id;
+      projectU.clientId = clientIdU;
+      cb();
+    },
+    function(cb) { projectU.save(cb); },
+    function(cb) {
+      projectIdU = projectU._id;
+      user.canSeeClients = [clientIdU];
+      cb();
+    },
+    function(cb) { user.save(cb) },
+    function(cb) {
+      userIdU = user._id;
+      var time = new Time({
+        clientId: clientIdU,
+        projectId: projectIdU,
+        userId: userIdU,
+        startTime: new Date(Date.now() - 60 * 60 * 1000),
+        endTime: new Date(Date.now())
       });
-    });
-  });
+      time.save(cb);
+    }
+  ], callback);
+}
+
+function addA(callback) {
+  async.series([
+    function(cb) { clientA.save(cb); },
+    function(cb) {
+      clientIdA = clientA._id;
+      projectA.clientId = clientIdA;
+      cb();
+    },
+    function(cb) { projectA.save(cb); },
+    function(cb) {
+      projectIdA = projectA._id;
+      cb();
+    },
+    function(cb) { adminUser.save(cb) },
+    function(cb) {
+      userIdA = adminUser._id;
+      var time = new Time({
+        clientId: clientIdA,
+        projectId: projectIdA,
+        userId: userIdA,
+        startTime: new Date(Date.now() - 60 * 60 * 1000),
+        endTime: new Date(Date.now())
+      });
+      time.save(cb);
+    }
+  ], callback);
+}
+
+function seedDb(callback) {
+  async.parallel([
+    addA,
+    addU
+  ], callback);
+}
+
+async.series([
+  clearDb,
+  seedDb
+], function(err) {
+  if (err) console.error(err);
 });
