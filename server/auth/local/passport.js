@@ -1,5 +1,6 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var _ = require('lodash');
 var User = User || require('../../api/user/user.model');
 
 
@@ -21,9 +22,8 @@ exports.setup = function (User, config) {
           return done(null, false, { message: 'This password is not correct.' });
         }
         */
-        if ( !user ) {
-          User.authenticate.apply({hashedPassword:'x'},  password)
-        } else if ( user.authenticate(password) ) {
+        user = user || _.extend({}, User.prototype, {hashedPassword: 'x'});
+        if ( user.authenticate(password) ) {
           return done(null, user);
         }
         return done(null, false, {message:'The email or password is not correct.'});
