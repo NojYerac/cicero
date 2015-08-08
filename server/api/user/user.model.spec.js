@@ -94,18 +94,18 @@ describe('User Model', function() {
 
   });
 
-  it("should return a CSRF token", function(done){
-      var token=user.csrf;
-      user.csrfTokens.should.have.length(1);
-      user.csrfTokens[0].token.should.equal(token);
-      done();
+  it("should return a CSRF token", function(done) {
+    var token = user.csrf;
+    user.csrfTokens.should.have.length(1);
+    user.csrfTokens[0].token.should.equal(token);
+    done();
   });
 
-  it ("should invalidate a bad CSRF token", function(done) {
-    var token=user.csrf;
+  it("should invalidate a bad CSRF token", function(done) {
+    var token = user.csrf;
     user.csrfTokens.should.have.length(1);
     try {
-      user.csrf='abc';
+      user.csrf = 'abc';
     } catch (err) {
       should.exist(err);
     }
@@ -113,13 +113,13 @@ describe('User Model', function() {
     done();
   });
 
-  it ("should expire old CSRF tokens", function(done) {
+  it("should expire old CSRF tokens", function(done) {
     var token = user.csrf
     user.csrfTokens.should.have.length(1);
     //make token 2 hours old
-    user.csrfTokens[0].createdAt = new Date(Date.now() - (2*60*60*1000));
+    user.csrfTokens[0].createdAt = new Date(Date.now() - (2 * 60 * 60 * 1000));
     try {
-      user.csrf=token;
+      user.csrf = token;
     } catch (err) {
       should.exist(err);
       err.should.have.property('message')
@@ -130,10 +130,10 @@ describe('User Model', function() {
 
   })
 
-  it ("should validate a good CSRF token", function(done) {
+  it("should validate a good CSRF token", function(done) {
     var token = user.csrf;
     try {
-      user.csrf=token
+      user.csrf = token
     } catch (err) {
       should.not.exist(err);
     } finally {
