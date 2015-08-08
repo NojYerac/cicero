@@ -14,16 +14,16 @@ exports.setup = function (User, config) {
         email: email.toLowerCase()
       }, function(err, user) {
         if (err) return done(err);
-        /*
-        if (!user) {
-          return done(null, false, { message: 'This email is not registered.' });
+        /**
+         * prevent timing attack by simulating a hash check
+         * even if the email is invalid.
+         * @return {boolean} false
+         */
+        var spinWheels = function() {
+          User.schema.methods.authenticate(password)
+          return false;
         }
-        if (!user.authenticate(password)) {
-          return done(null, false, { message: 'This password is not correct.' });
-        }
-        */
-        user = user || _.extend({}, User.prototype, {hashedPassword: 'x'});
-        if ( user.authenticate(password) ) {
+        if ( (user || spinWheels()) && user.authenticate(password) ) {
           return done(null, user);
         }
         return done(null, false, {message:'The email or password is not correct.'});
