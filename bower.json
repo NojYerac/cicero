@@ -5,7 +5,6 @@
     "angular": "~1",
     "json3": "~3",
     "es5-shim": "~3",
-    "jquery": "~1",
     "bootstrap-sass-official": "~3",
     "bootstrap": "~3",
     "angular-resource": "~1",
