@@ -10,21 +10,21 @@
   </accordion-heading>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3 col-xs-5">
+      <div class="col-md-3 col-sm-5">
         <label>Name:
           <div class="input-group">
             <input class="form-control" type="text" ng-model="user.name"></input>
           </div>
         </label>
       </div>
-      <div class="col-md-3 col-xs-5">
+      <div class="col-md-3 col-sm-5">
         <label>Email:
           <div class="input-group">
             <input class="form-control" type="text" ng-model="user.email"></input>
           </div>
         </label>
       </div>
-      <div class="col-md-2 col-xs-2">
+      <div class="col-md-2 col-sm-2">
         <label>Role: <br>
           <span class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button"
@@ -40,14 +40,14 @@
           </span>
         </label>
       </div>
-      <div class="col-md-3 col-xs-5" ng-show="newUser">
+      <div class="col-md-3 col-sm-5" ng-show="newUser">
         <label>Password:
           <div class="input-group">
             <input class="form-control" type="password" ng-model="user.password"></input>
           </div>
         </label>
       </div>
-      <div class="col-md-3 col-xs-5" ng-show="newUser">
+      <div class="col-md-3 col-sm-5" ng-show="newUser">
         <label>Confirm password:
           <div class="input-group">
             <input class="form-control" type="password" ng-model="user.confirmPassword"></input>
@@ -76,8 +76,9 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12 col-xs-12">
-        <div class="btn-group pull-right" style="margin-top:19px">
+      <div class="col-xs-2"></div>
+      <div class="col-xs-10">
+        <div class="btn-group" style="margin-top:19px">
           <button class="btn btn-small btn-default" ng-click="isOpen=false;newUser ? createUser() : editUser()">{{newUser?'Create':'Edit'}}</button>
           <button ng-show="!newUser" class="btn btn-small btn-danger" ng-click="confirmUserDelete(user.name);">Delete</button>
           <button class="btn btn-small btn-warning" ng-click="isOpen=false;resetUser()">Cancel</button>

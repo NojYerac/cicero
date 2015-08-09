@@ -3,8 +3,25 @@
 <div class="container">
   <h1>Timer</h1>
   <h2>{{displayElapsed()}}</h2>
+  <!-- <div class="row">
+    <div class="visible-xs-block col-xs-4"></div>
+    <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+      <label>New:<br/>
+        <button class="btn btn-default btn-checkbox-mock" ng-click="newProject=!newProject">
+          <span ng-show="newProject" class="glyphicon glyphicon-ok"></span>
+        </button>
+      </label>
+    </div>
+    <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
+      <label>Batch:<br/>
+        <button class="btn btn-default btn-checkbox-mock" ng-click="manualEntry=!manualEntry">
+          <span ng-show="manualEntry" class="glyphicon glyphicon-ok"></span>
+        </button>
+      </label>
+    </div>
+  </div> -->
   <div class="row">
-    <div class="col-lg-2 col-md-3 col-sm-4">
+    <div class="col-sm-6 col-xs-10">
       <label class="label-wide">Client:
         <select class="form-control" ng-model="selectedClient"
         ng-options="client as client.name for client in clients"
@@ -13,34 +30,59 @@
         </select>
       </label>
     </div>
-    <div class="col-lg-2 col-md-3 col-sm-4">
-      <label class="label-wide">Project:
-        <select class="form-control"
-        ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
-        ng-options="project as project.name for project in projectOptions">
-          <option value="">Select a project</option>
-        </select>
+    <div class="col-sm-6 col-xs-2">
+      <label>Batch:<br/>
+        <button class="btn btn-default btn-checkbox-mock" ng-click="manualEntry=!manualEntry">
+          <span ng-show="manualEntry" class="glyphicon glyphicon-ok"></span>
+        </button>
       </label>
     </div>
-    <div class="row">
-      <div class="visible-xs-block col-xs-4"></div>
-      <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-        <label>New:<br/>
-          <button class="btn btn-default btn-checkbox-mock" ng-click="newProject=!newProject">
-            <span ng-show="newProject" class="glyphicon glyphicon-ok"></span>
-          </button>
-        </label>
-      </div>
-      <div class="col-lg-1 col-md-2 col-sm-2 col-xs-2">
-        <label>Batch:<br/>
-          <button class="btn btn-default btn-checkbox-mock" ng-click="manualEntry=!manualEntry">
-            <span ng-show="manualEntry" class="glyphicon glyphicon-ok"></span>
-          </button>
-        </label>
-      </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Name:
+        <div class="input-group">
+          <span class="input-group-addon">
+            <span ng-click="newProject=!newProject">
+              <span class="glyphicon glyphicon-edit" ng-show="!newProject"></span>
+              <span class="glyphicon glyphicon-save" ng-show="newProject"></span>
+            </span>
+          </span>
+          <select class="form-control" ng-show="!newProject"
+          ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
+          ng-options="project as project.name for project in projectOptions">
+            <option value="">Select a project</option>
+          </select>
+          <input type="text" class="form-control" ng-show="newProject" ng-model="thisProject.name"></input>
+        </div>
+      </label>
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Note:
+        <input type="text" class="form-control" ng-model="thisProject.note" ng-disabled="!newProject"></input>
+      </label>
+    </div>
+    <div class="col-lg-2 col-md-4 col-sm-4">
+      <label class="label-wide">Rate:
+        <div class="input-group curency">
+          <span class="input-group-addon">
+            <span class="glyphicon glyphicon-usd"></span>
+          </span>
+          <input class="form-control" type="number" step="0.01" ng-model="thisProject.rate"  ng-disabled="!newProject"></input>
+        </div>
+      </label>
     </div>
   </div>
-  <div class="row" ng-show="newProject">
+  <!-- <div class="col-sm-6">
+    <label class="label-wide">Project:
+      <select class="form-control"
+      ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
+      ng-options="project as project.name for project in projectOptions">
+        <option value="">Select a project</option>
+      </select>
+    </label>
+  </div> -->
+  <!-- <div class="row" ng-show="newProject">
     <div class="col-lg-2 col-md-4 col-sm-4">
       <label class="label-wide">Name:
         <input type="text" class="form-control" ng-model="thisProject.name"></input>
@@ -61,7 +103,7 @@
         </div>
       </label>
     </div>
-  </div>
+  </div> -->
   <div class="row" ng-hide="manualEntry">
     <div class="col-lg-4 col-md-3 col-sm-2 col-xs-1"></div>
     <div class="col-lg-4 col-md-6 col-sm-8 col-xs-10">
@@ -75,49 +117,87 @@
   </div>
   <div ng-show="manualEntry">
     <div ng-repeat="time in theseTimes">
+      <label>Start Time:</label><br>
       <div class="row">
-        <div class="col-sm-4">
-          <label class="label-wide">Start Time:
-            <input class="form-control" type="datetime-local" ng-model="time.startTime"></input>
-          </label>
+        <div class="col-xs-6">
+          <span class="input-group">
+            <input type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="time.startTime" show-weeks="false" is-open="!!startDateOpen" close-text="Close">
+            </input>
+            <span class="input-group-btn">
+              <a type="button" class="btn btn-default" ng-click="startDateOpen=!startDateOpen">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </a>
+            </span>
+          </span>
         </div>
-        <div class="col-md-1 visible-md-block"></div>
-        <div class="col-sm-4">
-          <label class="label-wide">End Time:
-            <input class="form-control" type="datetime-local" ng-model="time.endTime"></input>
-          </label>
+        <div class="col-xs-6">
+          <timepicker ng-model="time.startTime" show-meridian="true" show-spinners="false"></timepicker>
         </div>
-        <div class="row">
-          <div class="visible-xs-block col-xs-3"></div>
-          <div class="col-sm-1 col-xs-2">&nbsp;<br>
-            <button class="btn btn-md btn-default" ng-click="addTime($index)">
-              <span class="glyphicon glyphicon-plus"></span>
-            </button>
-          </div>
-          <div class="col-sm-1 col-xs-2">&nbsp;<br>
-            <button class="btn btn-md btn-default" ng-disabled="theseTimes.length<2" ng-click="removeTime($index)">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button>
-          </div>
-          <div class="col-sm-2 col-xs-3">
-            <label class="lable-wide">Minutes:<br>
-              <span style="font-size:2em" ng-bind="getMinutesElapsed(time)"></span>
-              <span class="btn-group-vertical" style="margin-bottom: 12px">
-                <button class="btn btn-xs" style="height: 12px" ng-click="minutePlus(time)">
-                  <span class="caret caret-reversed" style="margin-bottom: 5px"></span>
-                </button>
-                <button class="btn btn-xs" style="height:12px" ng-click="minuteMinus(time)">
-                  <span class="caret" style="margin-bottom: 12px"></span>
-                </button>
-              </span>
-            </label>
-          </div>
+        <!-- <label class="label-wide">Start Time:
+          <input class="form-control" type="datetime-local" ng-model="time.startTime"></input>
+        </label> -->
+      </div>
+      <label>End Time:</label><br>
+      <div class="row">
+        <div class="col-xs-6">
+          <span class="input-group">
+            <input type="text" class="form-control" datepicker-popup="MM/dd/yyyy" ng-model="time.endTime" show-weeks="false" is-open="!!startDateOpen" close-text="Close">
+            </input>
+            <span class="input-group-btn">
+              <a type="button" class="btn btn-default" ng-click="endDateOpen=!endDateOpen">
+                <i class="glyphicon glyphicon-calendar"></i>
+              </a>
+            </span>
+          </span>
+        </div>
+        <div class="col-xs-6">
+          <timepicker ng-model="time.endTime" show-meridian="true" show-spinners="false"></timepicker>
+        </div>
+        <!-- <label class="label-wide">End Time:
+          <input class="form-control" type="datetime-local" ng-model="time.endTime"></input>
+        </label> -->
+      </div>
+      <div class="row">
+        <div class="col-sm-4 col-xs-3"></div>
+        <div class="col-sm-1 col-xs-2">&nbsp;<br>
+          <button class="btn btn-md btn-default" ng-click="addTime($index)">
+            <span class="glyphicon glyphicon-plus"></span>
+          </button>
+        </div>
+        <div class="col-sm-1 col-xs-2">&nbsp;<br>
+          <button class="btn btn-md btn-default" ng-disabled="theseTimes.length<2" ng-click="removeTime($index)">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button>
+        </div>
+        <div class="col-sm-2 col-xs-3">
+          <label class="lable-wide">Minutes:<br>
+            <span style="font-size:2em" ng-bind="getMinutesElapsed(time)"></span>
+            <span class="btn-group-vertical" style="margin-bottom: 12px">
+              <button class="btn btn-xs" style="height: 12px" ng-click="minutePlus(time)">
+                <span class="caret caret-reversed" style="margin-bottom: 5px"></span>
+              </button>
+              <button class="btn btn-xs" style="height:12px" ng-click="minuteMinus(time)">
+                <span class="caret" style="margin-bottom: 12px"></span>
+              </button>
+            </span>
+          </label>
         </div>
       </div>
     </div>
-    <div class="pull-right">
-      <button class="btn btn-lg btn-primary" ng-click="saveTimes()">Save</button>
+    <div class="row">
+      <div class="col-lg-4 col-md-3 col-sm-2 col-xs-1"></div>
+      <div class="col-lg-4 col-md-6 col-sm-8 col-xs-10">
+        <div class="btn-group btn-group-justified">
+          <a href ng-class="['btn', 'btn-xl', 'btn-success']" ng-click="saveTimes()">
+            Save Batch
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4 col-xs-1"></div>
     </div>
+    <!-- <div class="pull-right">
+      <button class="btn btn-lg btn-primary" ng-click="saveTimes()">Save</button>
+    </div> -->
   </div>
   <div style="position:fixed;bottom:0px;left:0;z-index:10;">
     <div class="container">

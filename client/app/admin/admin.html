@@ -47,7 +47,7 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <label>Client:
+          <label class="label-wide">Client:
             <select class="form-control" ng-model="selectedClient"
             ng-options="client as client.name for client in clients"
             ng-change="populateProjectOptions()">
@@ -56,28 +56,42 @@
           </label>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <label>Project:
-            <select class="form-control"
+          <label class="label-wide">Project:
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span ng-click="newProject=!newProject">
+                  <span class="glyphicon glyphicon-edit" ng-show="!newProject"></span>
+                  <span class="glyphicon glyphicon-save" ng-show="newProject"></span>
+                </span>
+              </span>
+              <select class="form-control" ng-show="!newProject"
+              ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
+              ng-options="project as project.name for project in projectOptions">
+                <option value="">Select a project</option>
+              </select>
+              <input type="text" class="form-control" ng-show="newProject" ng-model="thisProject.name"></input>
+            </div>
+            <!-- <select class="form-control"
             ng-disabled="newProject || !selectedClient._id" ng-model="thisProject"
             ng-options="project as project.name for project in projectOptions">
               <option value="">Select a project</option>
-            </select>
+            </select> -->
           </label>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-4">
+        <!-- <div class="col-lg-2 col-md-4 col-sm-4">
           <label>New:<br/>
             <button class="btn btn-default btn-checkbox-mock" ng-click="newProjectClick()">
               <span ng-show="newProject" class="glyphicon glyphicon-ok"></span>
             </button>
           </label>
-        </div>
+        </div> -->
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <label>Name:
+          <label class="label-wide">Name:
             <input type="text" class="form-control" ng-model="thisProject.name"></input>
           </label>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-4">
-          <label>Note:
+          <label class="label-wide">Note:
             <input type="text" class="form-control" ng-model="thisProject.note"></input>
           </label>
         </div>
