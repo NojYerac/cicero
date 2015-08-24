@@ -3,15 +3,18 @@
 var should = require('should');
 var app = require('../../app');
 var request = require('supertest');
+var async = require('async');
 var User = require('../user/user.model');
 var Client = require('../client/client.model');
 var Project = require('./project.model')
+
 var user = new User({
   provider: 'local',
   name: 'Fake User',
   email: 'test@test.com',
   password: 'password',
 });
+
 var adminUser = new User({
   provider: 'local',
   name: 'Fake Admin User',
@@ -19,6 +22,7 @@ var adminUser = new User({
   password: 'admin',
   role: 'admin'
 });
+
 var clientA = new Client({
   name: 'Client A',
   prefix: 'CA',
@@ -27,6 +31,7 @@ var clientA = new Client({
   associatedUsers: [],
   active: true
 });
+
 var clientB = new Client({
   name: 'Client B',
   prefix: 'CB',
@@ -35,10 +40,23 @@ var clientB = new Client({
   associatedUsers: [],
   active: true
 });
+
 var agent, adminUserToken, adminUserId, adminTimeId,
   userAgent, userToken, userId, userTimeId;
 
+function clearDb(callback) {
+  async.parallel([
+    function(cb) {Client.find({}).remove(cb);},
+    function(cb) {User.find({}).remove(cb);},
+    function(cb) {Project.find({}).remove(cb);},
+  ], callback);
+}
+
 describe('Project API', function() {
+
+  before(function(done) {
+    clearDb(done);
+  });
 
   before(function(done){
     adminUser.save(function(err){
