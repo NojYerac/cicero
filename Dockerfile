@@ -22,7 +22,7 @@ RUN ["chown", "-R", "cicero", "/cicero"]
 # Run as non-root user
 USER cicero
 # Set the node environment
-ENV NODE_ENV production
+ENV NODE_ENV first-run
 
 #TODO: prefixer is broken somewhere...
 RUN ln -s /cicero/public /cicero/client
